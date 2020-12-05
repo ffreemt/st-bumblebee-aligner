@@ -44,6 +44,10 @@ poetry install
 ```bash
 streamlit run st-bumblebee-aligner.py
 ```
+or
+```
+python -m streamlit run st-bumblebee-aligner.py
+```
 
 Point your browser to `http://127.0.0.1:8501`
 

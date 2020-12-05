@@ -234,11 +234,11 @@ def main():
         value=False,
         key="sent-align",
     ):
-        if file1_flag and file2_flag:
-            st.info(" to be implemented ")
-        else:
+        if not (file1_flag and file2_flag):
             st.info("Pick two files first")
-
+        else:
+            st.info(" sent alignment to be implemented ")
+            ...
     back_cover()
 
 
