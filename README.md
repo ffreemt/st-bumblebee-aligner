@@ -46,3 +46,13 @@ streamlit run st-bumblebee-aligner.py
 ```
 
 Point your browser to `http://127.0.0.1:8501`
+
+### Notes
+The newest `numpy` is known to cause some problems, refer to `https://tinyurl.com/y3dm3h86`. Pin to version `1.19.3` may rid of the problems, e.g., 
+```
+pip install -U numpy==1.19.3
+```
+or
+```
+poetry add numpy==1.19.3
+```

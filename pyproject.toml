@@ -13,6 +13,7 @@ diskcache = "^5.1.0"
 logzero = "^1.6.3"
 sentence_splitter = "^1.4"
 langid = "^1.1.6"
+numpy = "1.19.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
