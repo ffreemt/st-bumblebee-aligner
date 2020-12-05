@@ -7,6 +7,12 @@ authors = ["freemt <yucongo+fmt@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.7"
 streamlit = "^0.72.0"
+polyglot = "^16.7.4"
+seaborn = "^0.11.0"
+diskcache = "^5.1.0"
+logzero = "^1.6.3"
+sentence_splitter = "^1.4"
+langid = "^1.1.6"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

@@ -89,7 +89,7 @@ def front_cover():
 
 
 def back_cover():
-    st.markdown("--- \n* bumblebee-ng v.0.1.0 from mu@qq41947782's keyboard in cyberspace. Join **qq group 316287378** for feedback and questions or to be kept updated. This web version of bumblebee is the twin brother of **desktop bumblebee**.")
+    st.markdown("--- \n* use the left sidebar to navigate\n* bumblebee-ng v.0.1.0 from mu@qq41947782's keyboard in cyberspace. Join **qq group 316287378** for feedback and questions or to be kept updated. This web version of bumblebee is the twin brother of **desktop bumblebee**.")
 
 
 pd.set_option('precision', 2)
