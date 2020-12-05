@@ -123,6 +123,7 @@ def main():
     front_cover()
 
     p_list = None
+    p_list1 = None
     file1_flag, file2_flag = False, False
 
     # fetch file contents
@@ -279,11 +280,11 @@ def main():
                 f"file1: {len1s} sents", f"{lang1}",
                 f"file2: {len2s} sents", f"{lang2}",
             ])
-            
+
             est_time1 = len1s // 32 + bool(len1s % 32)
             est_time1 += len2s // 32 + bool(len2s % 32)
             est_time1 *= 7/60
-            
+
             st.info(f"The first run may take a while, about {est_time1:.1f} min")
             try:
             #     cos_mat = np.asarray(bee_corr(src_text, tgt_text))
@@ -296,6 +297,9 @@ def main():
             st.markdown("### cosine similarity matrix (sents)")
             st.dataframe(pd.DataFrame(cos_mat1))
 
+            mean1 = cos_mat1.mean()
+            var1 = cos_mat1.var()
+
             fig, ax = plt.subplots()
             # fig = plt.figure()  # (figsize= (10,7))
 
@@ -304,8 +308,40 @@ def main():
 
             plt.xlabel("file2")
             plt.ylabel("file1")
-            plt.title("cosine similarity (sents) heatmap")
+            plt.title(f"mean={mean1.round(2)} var={var1.round(2)} cosine similarity (sents) heatmap")
             st.pyplot(fig)
+
+            # st.markdown("## fine-tune alignment")
+            st.header("fine-tune sent alignment")
+
+            thr_i = float(round(min(mean1 + 30 * var1, 0.5), 2))
+            st.info(f"inital threshold={thr_i:.2f}")
+
+            thr1 = st.slider(
+                "threshold (0...1) -- drag or click to adjust threshold value",
+                min_value=0.,
+                max_value=1.,
+                value=thr_i,
+                step=0.05,
+                # key="sliderkey",
+            )
+
+            p_list1 = bee_aligner(sents1, sents2, cos_mat=cos_mat1, thr=thr1)
+
+            if p_list1 is not None:
+                df1 = pd.DataFrame(p_list1)
+                st.markdown("#### sent alignment at a glance")
+                st.info("(hove over a cell to disply full text)")
+
+                st.dataframe(df1)
+                st.subheader("sent alignment in detail")
+                if st.checkbox(f"tick to show detailed sent alignment (threhold={thr1})", value=0, key="para_df"):
+                        st.table(df1)
+
+                s_df1 = color_table_applymap(df1)
+
+                st.sidebar.subheader("aligned sent xlsx file for downloading")
+                st.sidebar.markdown(get_table_download_link_sents(s_df1), unsafe_allow_html=True)
 
     back_cover()
 
