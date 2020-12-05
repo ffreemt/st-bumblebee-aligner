@@ -3,6 +3,8 @@
 based on st-bee2-aligner.py
 """
 
+from typing import List
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -11,6 +13,8 @@ import streamlit as st
 import base64
 from io import BytesIO
 from polyglot.text import Detector, Text
+from sentence_splitter import split_text_into_sentences
+
 
 import logzero
 from logzero import logger
@@ -23,6 +27,23 @@ from bee_aligner.text_to_plist import text_to_plist
 from bee_aligner.bee_aligner import bee_aligner
 
 logzero.loglevel(20)
+
+# use sentence_splitter if supported
+LANG_S = ["ca", "cs", "da", "nl", "en", "fi", "fr", "de",
+          "el", "hu", "is", "it", "lv", "lt", "no", "pl",
+          "pt", "ro", "ru", "sk", "sl", "es", "sv", "tr"]
+
+
+def seg_text(text: str, lang: str) -> List[str]:
+    """ split text to sentences.
+
+    use sentence_splitter if supported,
+    else use polyglot.text.Text
+    """
+    if lang in LANG_S:
+        return split_text_into_sentences(text, lang)
+
+    return [elm.string for elm in Text(text, lang).sentences]
 
 
 def split_text(text, sep='\n'):
@@ -111,6 +132,8 @@ def main():
         if isinstance(src_file, bytes):
             src_file = src_file.decode("utf8")
 
+        lang1 = Detector(src_file).language.code
+
         src_text = split_text(src_file)
 
         # s_or_d = single_or_dual(src_file)
@@ -125,6 +148,8 @@ def main():
             tgt_file = tgt_fileio.getvalue()
             if isinstance(tgt_file, bytes):
                 tgt_file = tgt_file.decode("utf8")
+
+            lang2 = Detector(tgt_file).language.code
 
             tgt_text = split_text(tgt_file)
 
@@ -237,8 +262,51 @@ def main():
         if not (file1_flag and file2_flag):
             st.info("Pick two files first")
         else:
-            st.info(" sent alignment to be implemented ")
-            ...
+            # st.info(" sent alignment to be implemented ")
+            sents1 = []
+            for elm in src_text:
+                if elm.strip():
+                    sents1.extend(seg_text(elm, lang1))
+            st.info(sents1[:3])
+            sents2 = []
+            for elm in tgt_text:
+                if elm.strip():
+                    sents2.extend(seg_text(elm, lang2))
+            st.info(sents2[:3])
+            len1s = len(sents1)
+            len2s = len(sents2)
+            st.info([
+                f"file1: {len1s} sents", f"{lang1}",
+                f"file2: {len2s} sents", f"{lang2}",
+            ])
+            
+            est_time1 = len1s // 32 + bool(len1s % 32)
+            est_time1 += len2s // 32 + bool(len2s % 32)
+            est_time1 *= 7/60
+            
+            st.info(f"The first run may take a while, about {est_time1:.1f} min")
+            try:
+            #     cos_mat = np.asarray(bee_corr(src_text, tgt_text))
+                cos_mat1 = np.asarray(bee_corr(sents1, sents2))
+            except Exception as exc:
+                # st.write("exc: ", exc)
+                logger.error("exc: %s", exc)
+                raise SystemExit(1) from Exception
+
+            st.markdown("### cosine similarity matrix (sents)")
+            st.dataframe(pd.DataFrame(cos_mat1))
+
+            fig, ax = plt.subplots()
+            # fig = plt.figure()  # (figsize= (10,7))
+
+            # cmap = sns.diverging_palette(20, 220, as_cmap=True)
+            sns.heatmap(cos_mat1, vmin=0, vmax=1)
+
+            plt.xlabel("file2")
+            plt.ylabel("file1")
+            plt.title("cosine similarity (sents) heatmap")
+            st.pyplot(fig)
+
     back_cover()
 
 
