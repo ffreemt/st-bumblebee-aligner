@@ -682,6 +682,9 @@ webencodings==0.5.1 \
 widgetsnbextension==3.5.1 \
     --hash=sha256:bd314f8ceb488571a5ffea6cc5b9fc6cba0adaf88a9d2386b93a489751938bcd \
     --hash=sha256:079f87d87270bce047512400efd70238820751a11d2d8cb137a5a5bdbaf255c7
+xlsxwriter==1.3.7 \
+    --hash=sha256:b807c2d3e379bf6a925f472955beef3e07495c1bac708640696876e68675b49b \
+    --hash=sha256:9b1ade2d1ba5d9b40a6d1de1d55ded4394ab8002718092ae80a08532c2add2e6
 zipp==3.4.0; python_version < "3.8" \
     --hash=sha256:102c24ef8f171fd729d46599845e95c7ab894a4cf45f5de11a44cc7444fb1108 \
     --hash=sha256:ed5eee1974372595f9e416cc7bbeeb12335201d8081ca8a0743c954d4446e5cb

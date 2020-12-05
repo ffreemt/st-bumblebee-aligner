@@ -76,8 +76,8 @@ def front_cover():
     global src_fileio
 
     # st.sidebar.markdown("# web bumblebee aligner")
-    st.sidebar.title("web bumblebee-ng aligner ")
-    st.sidebar.markdown("total # of paras limited to 300")
+    st.sidebar.title("streamlit powered bumblebee-ng aligner ")
+    # st.sidebar.markdown("total # of paras limited to 300")
 
     # st.markdown("## pick two files")
     st.sidebar.subheader("pick two separate files or a single dual-language file")
