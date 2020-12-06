@@ -49,10 +49,21 @@ or
 python -m streamlit run st-bumblebee-aligner.py
 ```
 
+* `st-bumblebee-aligner-v0.1.0.py` is the same as `st-bumblebee-aligner.py`
+   * Simple para alignment of sent alignment
+
+* `st-bumblebee-aligner-v0.1.1.py`
+  * introduced sent alignment within paras aligned
+
+To try `st-bumblebee-aligner-v0.1.1.py`, do
+```
+streamlit run st-bumblebee-aligner-v0.1.1.py
+```
+
 Point your browser to `http://127.0.0.1:8501`
 
 ### Notes
-The newest `numpy` is known to cause some problems, refer to `https://tinyurl.com/y3dm3h86`. Pin to version `1.19.3` may rid of the problems, e.g., 
+The newest `numpy` is known to cause some problems, refer to `https://tinyurl.com/y3dm3h86`. Pin to version `1.19.3` may rid of the problems, e.g.,
 ```
 pip install -U numpy==1.19.3
 ```
