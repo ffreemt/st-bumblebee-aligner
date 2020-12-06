@@ -109,7 +109,8 @@ def front_cover():
     st.success(op_selectbox)
 
     # st.markdown("## pick two files")
-    st.sidebar.subheader("pick two separate files or a single dual-language file")
+    st.sidebar.subheader("pick two separate files")
+    # or a single dual-language file
 
     src_fileio = st.sidebar.file_uploader("Choose a file (utf8 txt)", type=['txt',], key="src_text")
 
