@@ -230,8 +230,10 @@ def main():
             # cmap = sns.diverging_palette(20, 220, as_cmap=True)
             sns.heatmap(cos_mat, vmin=0, vmax=1)
 
-            plt.xlabel("file2")
-            plt.ylabel("file1")
+            # plt.xlabel("file2")
+            # plt.ylabel("file1")
+            plt.xlabel(f"{tgt_fileio.name}")
+            plt.ylabel(f"{src_fileio.name}")
             plt.title("cosine similarity heatmap")
             st.pyplot(fig)
 
@@ -277,8 +279,8 @@ def main():
                 if p_list is None:
                     st.info(" align paras first")
                 else:
-                    st.subheader(" TODO ")
-                    st.info(" TODO ")
+                    st.subheader(" Aligning sents ")
+                    # st.info(" TODO ")
 
                     # ====
                     then = default_timer()
@@ -404,8 +406,8 @@ def main():
             # cmap = sns.diverging_palette(20, 220, as_cmap=True)
             sns.heatmap(cos_mat1, vmin=0, vmax=1)
 
-            plt.xlabel("file2")
-            plt.ylabel("file1")
+            plt.xlabel(f"{tgt_fileio.name}")
+            plt.ylabel(f"{src_fileio.name}")
             plt.title(f"mean={mean1.round(2)} var={var1.round(2)} cosine similarity (sents) heatmap")
             st.pyplot(fig)
 
@@ -443,5 +445,7 @@ def main():
 
     back_cover()
 
+
+    # st.write(src_fileio.name)
 
 main()
