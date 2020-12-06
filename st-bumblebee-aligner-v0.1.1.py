@@ -102,8 +102,9 @@ def front_cover():
     # st.sidebar.markdown("total # of paras limited to 300")
 
     # branch
+    st.sidebar.subheader("What would you like to do?")
     op_selectbox = st.sidebar.selectbox(
-        "What would you like to do?",
+        "",
         ("Para/Sent Align", "Simple Sent Align")
     )
     st.success(op_selectbox)
