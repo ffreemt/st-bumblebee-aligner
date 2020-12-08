@@ -1,5 +1,6 @@
 PyICU
-pycld2
+pycld2==0.41 \
+    --hash=a42f6e974df8fdd70685c2baa8a9f523069a260e1140ce604fb9f1fb6c3064df
 Morfessor==2.0.6 \
     --hash=sha256:7215e37909ebd2bafeeec5fdf4e339a25e61aee4895ff99317b9fb44eddab562
 altair==4.1.0 \
