@@ -1,4 +1,3 @@
 PyICU
 pycld2
 Morfessor
-seaborn
