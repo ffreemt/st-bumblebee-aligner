@@ -1,4 +1,5 @@
-# streamlit bumblebee aligner
+# streamlit bumblebee aligner [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/ffreemt/st-bumblebee-aligner/bumblebee-aligner-v0.1.1.py)
+
 a streamlit powered bumblebee aligner
 
 ### Pre-installation of `pyicu`, `pycld2` and `morfessor`
