@@ -13,7 +13,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.7, 3.8]
 
     steps:
     - uses: actions/checkout@v1
@@ -31,7 +31,7 @@ jobs:
         poetry install -v
     - name: Lint with flake8
       run: |
-        poetry run python -m flake8 . --count --exit-zero --max-complexity=35 --ignore=E501,F401,E302,W292,F811,F841 --statistics
+        poetry run python -m flake8 . --count --exit-zero --max-complexity=35 --ignore=E501,F401,E302,W292,F811,F841,E231,E226,W391,E451,E115,E117,E303,E305,E225,F541 --statistics
 
     - name: Test with pytest
       run: |

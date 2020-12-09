@@ -265,7 +265,7 @@ def main():
 
                 st.subheader("para alignment in detail")
                 if st.checkbox(f"tick to show detailed alignment (threhold={thr})", value=0, key="para_df"):
-                        st.table(df)
+                    st.table(df)
 
                 s_df = color_table_applymap(df)
 
@@ -342,7 +342,7 @@ def main():
                     # s_df_sents = color_table_applymap(df_sents)
                     s_df_sents = df_sents
 
-                    if st.checkbox(f"Tick to show", value=0, key="finall align sentences"):
+                    if st.checkbox("Tick to show", value=0, key="finall align sentences"):
                         # st.table(final_aligned)
                         st.table(s_df_sents)
 
@@ -438,7 +438,7 @@ def main():
                 st.dataframe(df1)
                 st.subheader("sent alignment in detail")
                 if st.checkbox(f"tick to show detailed sent alignment (threhold={thr1})", value=0, key="para_df"):
-                        st.table(df1)
+                    st.table(df1)
 
                 s_df1 = color_table_applymap(df1)
 
@@ -446,7 +446,6 @@ def main():
                 st.sidebar.markdown(get_table_download_link_sents(s_df1), unsafe_allow_html=True)
 
     back_cover()
-
 
     # st.write(src_fileio.name)
 

@@ -1,4 +1,4 @@
-# streamlit bumblebee aligner [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/ffreemt/st-bumblebee-aligner/bumblebee-aligner-v0.1.1.py)
+# streamlit bumblebee aligner ![build](https://github.com/ffreemt/st-bumblebee-aligner/workflows/build/badge.svg)[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/ffreemt/st-bumblebee-aligner/st_app.py)
 
 a streamlit powered bumblebee aligner
 
@@ -63,7 +63,7 @@ streamlit run st-bumblebee-aligner-v0.1.1.py
 
 Point your browser to `http://127.0.0.1:8501`
  and follow instructions.
- 
+
 ### Notes
 The newest `numpy` is known to cause some problems, refer to `https://tinyurl.com/y3dm3h86`. Pin `numpy` to version `1.19.3` may get rid of the problems, e.g.,
 ```
