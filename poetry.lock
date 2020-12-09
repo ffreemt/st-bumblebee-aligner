@@ -741,6 +741,14 @@ version = "8.0.1"
 
 [[package]]
 category = "dev"
+description = "Manages pip requirements files for multiple environments, e.g. production and development"
+name = "pipreq"
+optional = false
+python-versions = "*"
+version = "0.4"
+
+[[package]]
+category = "dev"
 description = "plugin and hook calling mechanisms for python"
 name = "pluggy"
 optional = false
@@ -1257,7 +1265,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [metadata]
-content-hash = "ae31dc9437ef6bca7d0f207cbc2b5cdd8e6728f3eae1663f7335edfecd2c6855"
+content-hash = "cdc066fa46056bcc55c31347dca638ac13e8f55366498362738e52551a9dda40"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1707,6 +1715,9 @@ pillow = [
     {file = "Pillow-8.0.1-pp36-pypy36_pp73-manylinux2010_x86_64.whl", hash = "sha256:4b0ef2470c4979e345e4e0cc1bbac65fda11d0d7b789dbac035e4c6ce3f98adb"},
     {file = "Pillow-8.0.1-pp37-pypy37_pp73-win32.whl", hash = "sha256:8de332053707c80963b589b22f8e0229f1be1f3ca862a932c1bcd48dafb18dd8"},
     {file = "Pillow-8.0.1.tar.gz", hash = "sha256:11c5c6e9b02c9dac08af04f093eb5a2f84857df70a7d4a6a6ad461aca803fb9e"},
+]
+pipreq = [
+    {file = "pipreq-0.4.tar.gz", hash = "sha256:db525b0ba8443abc977aa0a83d0966f83ac3735ebc6a1c5986fa24a40ee08e2c"},
 ]
 pluggy = [
     {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},

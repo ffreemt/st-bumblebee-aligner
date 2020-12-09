@@ -19,6 +19,7 @@ xlsxwriter = "^1.3.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
+pipreq = "^0.4"
 
 [build-system]
 requires = ["poetry>=0.12"]

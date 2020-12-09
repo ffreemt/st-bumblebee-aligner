@@ -80,7 +80,7 @@ regex==2020.11.13
 requests==2.25.0
 rfc3986==1.4.0
 scipy==1.5.4
-seaborn==0.11.0
+seaborn
 send2trash==1.5.0
 sentence-splitter==1.4
 six==1.15.0
