@@ -54,14 +54,16 @@ def split_text(text, sep='\n'):
 
 
 @st.cache
-def bee_corr(text1, text2):
+def bee_corr(text1, text2, url=None):
     logger.debug('type: %s, text[:4]: %s', type(text1), text1[:10])
     if isinstance(text1, str):
         text1 = split_text(text1)
     if isinstance(text2, str):
         text2 = split_text(text2)
-
-    return fetch_sent_corr(text1, text2)
+    if url is None:
+        return fetch_sent_corr(text1, text2)
+    else:
+        return fetch_sent_corr(text1, text2, url=url)
 
 
 # https://discuss.streamlit.io/t/how-to-download-file-in-streamlit/1806/12
@@ -108,6 +110,20 @@ def front_cover():
         ("Para/Sent Align", "Simple Sent Align")
     )
     st.success(op_selectbox)
+
+    # st.sidebar.subheader("Select a model")
+    mod_selectbox = st.sidebar.selectbox(
+        "Select a model (optional)",
+        ("Model 1", "Google USE")
+    )
+    st.success(mod_selectbox)
+
+    # model_url
+    if mod_selectbox in ["Model 1"]:
+        model_url = None
+        # default to preset url "http://216.24.255.63:8000/text/"
+    else:
+        model_url = ""http://216.24.255.63:8008/text/"
 
     # st.markdown("## pick two files")
     st.sidebar.subheader("pick two separate files")
@@ -217,7 +233,7 @@ def main():
             st.write(f" Processing... first run can take a while, ~{est_time:.1f}  min. Please wait...")
 
             try:
-                cos_mat = np.asarray(bee_corr(src_text, tgt_text))
+                cos_mat = np.asarray(bee_corr(src_text, tgt_text, url=model_url))
             except Exception as exc:
                 st.write("exc: %s" % exc)
                 st.stop()
@@ -316,6 +332,7 @@ def main():
                             s_list[elm][1],
                             # src_lang=lang1,
                             # tgt_lang=lang2,
+                            url=model_url
                         )
                         s_list_aligned = bee_aligner(
                             s_list[elm][0],
@@ -389,7 +406,7 @@ def main():
             st.info(f"The first run may take a while, about {est_time1:.1f} min")
             try:
             #     cos_mat = np.asarray(bee_corr(src_text, tgt_text))
-                cos_mat1 = np.asarray(bee_corr(sents1, sents2))
+                cos_mat1 = np.asarray(bee_corr(sents1, sents2, url=model_url))
             except Exception as exc:
                 # st.write("exc: ", exc)
                 logger.error("exc: %s" % exc)
