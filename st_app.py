@@ -97,7 +97,7 @@ def get_table_download_link_sents(df):
 
 
 def front_cover():
-    global src_fileio, op_selectbox
+    global src_fileio, op_selectbox, model_url
 
     # st.sidebar.markdown("# web bumblebee aligner")
     st.sidebar.title("streamlit powered bumblebee-ng aligner ")
