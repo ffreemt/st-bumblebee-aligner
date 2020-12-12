@@ -123,7 +123,7 @@ def front_cover():
         model_url = None
         # default to preset url "http://216.24.255.63:8000/text/"
     else:
-        model_url = ""http://216.24.255.63:8008/text/"
+        model_url = "http://216.24.255.63:8008/text/"
 
     # st.markdown("## pick two files")
     st.sidebar.subheader("pick two separate files")
