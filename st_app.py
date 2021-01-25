@@ -183,9 +183,10 @@ def main():
 
             len_ = len(src_text) + len(tgt_text)
             if len_ > 300:
-                st.markdown("Sorry, this will likely hog the petite server to it's virtual death (total number paragraphs limited to **300** ). We'll trim both texts to 50 and have a testrun. ")
-                src_text = src_text[:150]
-                tgt_text = tgt_text[:150]
+                # st.markdown("Sorry, this will likely hog the petite server to it's virtual death (total number paragraphs limited to **300** ). We'll trim both texts to 50 and have a testrun. ")
+                st.warning(" This is likely to take a long time...")
+                # src_text = src_text[:150]
+                # tgt_text = tgt_text[:150]
                 len_ = len(src_text) + len(tgt_text)
 
             logger.info("total paras: %s", len_)
