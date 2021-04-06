@@ -1,6 +1,6 @@
 # streamlit bumblebee aligner ![build](https://github.com/ffreemt/st-bumblebee-aligner/workflows/build/badge.svg)[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/ffreemt/st-bumblebee-aligner/st_app.py)
 
-a streamlit powered bumblebee aligner
+a streamlit powered bumblebee aligner (refined and production-ready)
 
 ### Pre-installation of `pyicu`, `pycld2` and `morfessor`
 
@@ -36,19 +36,24 @@ with `pip`, run
 ```
 pip install -r requirements.txt
 ```
-or with `poetry`, run
+<details>
+<summary>or with `poetry`, run</summary>
+
 ```
 poetry install
 ```
+</details>
 
 ### Usage
 ```bash
 streamlit run st-bumblebee-aligner.py
 ```
-or
+<details><summary>or</summary>
+
 ```
 python -m streamlit run st-bumblebee-aligner.py
 ```
+<details>
 
 * `st-bumblebee-aligner-v0.1.0.py` is the same as `st-bumblebee-aligner.py`
    * Simple para alignment or sent alignment
