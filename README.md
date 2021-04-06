@@ -1,4 +1,4 @@
-# streamlit bumblebee aligner ![build](https://github.com/ffreemt/st-bumblebee-aligner/workflows/build/badge.svg)[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/ffreemt/st-bumblebee-aligner/st_app.py)
+# streamlit bumblebee aligner ![build](https://github.com/ffreemt/st-bumblebee-aligner/workflows/build/badge.svg)[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/ffreemt/st-bumblebee-aligner/dev/st_app.py)
 
 a streamlit powered bumblebee aligner (refined and production-ready)
 
@@ -53,7 +53,7 @@ streamlit run st-bumblebee-aligner.py
 ```
 python -m streamlit run st-bumblebee-aligner.py
 ```
-<details>
+</details>
 
 * `st-bumblebee-aligner-v0.1.0.py` is the same as `st-bumblebee-aligner.py`
    * Simple para alignment or sent alignment
