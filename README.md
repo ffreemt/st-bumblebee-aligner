@@ -37,7 +37,7 @@ with `pip`, run
 pip install -r requirements.txt
 ```
 <details>
-<summary>or with `poetry`, run</summary>
+<summary>or with ``poetry``, run</summary>
 
 ```
 poetry install
