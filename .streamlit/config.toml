@@ -1,0 +1,11 @@
+[server]
+# port = 8501  # default
+port = 8508
+
+[logger]
+
+# Level of logging: 'error', 'warning', 'info', or 'debug'.
+# Default: 'info'
+# level = "debug"
+
+[theme]
