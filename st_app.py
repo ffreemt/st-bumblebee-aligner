@@ -793,7 +793,7 @@ def main():
         _ = pd.DataFrame(aligned_blocks)
         st.table(color_table_applymap(_))
 
-    logger.debug(" **aligned_blocks** \n%s", aligned_blocks)
+    logger.debug(" **aligned_blocks[:50]** \n%s", aligned_blocks[:50])
     # print("**aligned_blocks**", aligned_blocks)
 
 main()
