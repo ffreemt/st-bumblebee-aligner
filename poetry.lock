@@ -231,6 +231,14 @@ optional = false
 python-versions = ">=3"
 
 [[package]]
+name = "docopt"
+version = "0.6.2"
+description = "Pythonic argument parser, that will make you smile"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "entrypoints"
 version = "0.3"
 description = "Discover and load entry points from installed packages."
@@ -847,12 +855,16 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
-name = "pipreq"
-version = "0.4"
-description = "Manages pip requirements files for multiple environments, e.g. production and development"
+name = "pipreqs"
+version = "0.4.10"
+description = "Pip requirements.txt generator based on imports in project"
 category = "dev"
 optional = false
 python-versions = "*"
+
+[package.dependencies]
+docopt = "*"
+yarg = "*"
 
 [[package]]
 name = "pluggy"
@@ -1454,6 +1466,17 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "yarg"
+version = "0.1.9"
+description = "A semi hard Cornish cheese, also queries PyPI (PyPI client)"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+requests = "*"
+
+[[package]]
 name = "zipp"
 version = "3.4.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
@@ -1468,7 +1491,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "c403bde937104c6f4774eebec211fc1fac9af1854e7cb9799bc891b457170b0e"
+content-hash = "3e61845c40d13e78a269a59782cc70aee9d058670b6e644311a5b774937c56b8"
 
 [metadata.files]
 absl-py = [
@@ -1643,6 +1666,9 @@ defusedxml = [
 diskcache = [
     {file = "diskcache-5.1.0-py3-none-any.whl", hash = "sha256:d8d608363f1b0ecbc216b5b34b6c8e269a5d4cce338269f3b1c1f8f11816f71d"},
     {file = "diskcache-5.1.0.tar.gz", hash = "sha256:bc7928df986dbc8a8d6e34c33b0da89d668cfa65e7fcc91298a6959a35076993"},
+]
+docopt = [
+    {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},
 ]
 entrypoints = [
     {file = "entrypoints-0.3-py2.py3-none-any.whl", hash = "sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19"},
@@ -1996,8 +2022,9 @@ pillow = [
     {file = "Pillow-8.0.1-pp37-pypy37_pp73-win32.whl", hash = "sha256:8de332053707c80963b589b22f8e0229f1be1f3ca862a932c1bcd48dafb18dd8"},
     {file = "Pillow-8.0.1.tar.gz", hash = "sha256:11c5c6e9b02c9dac08af04f093eb5a2f84857df70a7d4a6a6ad461aca803fb9e"},
 ]
-pipreq = [
-    {file = "pipreq-0.4.tar.gz", hash = "sha256:db525b0ba8443abc977aa0a83d0966f83ac3735ebc6a1c5986fa24a40ee08e2c"},
+pipreqs = [
+    {file = "pipreqs-0.4.10-py2.py3-none-any.whl", hash = "sha256:cafe42ab70628d408c147fb8944bc303355ea8f91fddca4a98d273e572e39905"},
+    {file = "pipreqs-0.4.10.tar.gz", hash = "sha256:9e351d644b28b98d7386b046a73806cbb3bb66b23a30e74feeb95ed9571db939"},
 ]
 pluggy = [
     {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
@@ -2406,6 +2433,10 @@ widgetsnbextension = [
 xlsxwriter = [
     {file = "XlsxWriter-1.3.7-py2.py3-none-any.whl", hash = "sha256:b807c2d3e379bf6a925f472955beef3e07495c1bac708640696876e68675b49b"},
     {file = "XlsxWriter-1.3.7.tar.gz", hash = "sha256:9b1ade2d1ba5d9b40a6d1de1d55ded4394ab8002718092ae80a08532c2add2e6"},
+]
+yarg = [
+    {file = "yarg-0.1.9-py2.py3-none-any.whl", hash = "sha256:4f9cebdc00fac946c9bf2783d634e538a71c7d280a4d806d45fd4dc0ef441492"},
+    {file = "yarg-0.1.9.tar.gz", hash = "sha256:55695bf4d1e3e7f756496c36a69ba32c40d18f821e38f61d028f6049e5e15911"},
 ]
 zipp = [
     {file = "zipp-3.4.0-py3-none-any.whl", hash = "sha256:102c24ef8f171fd729d46599845e95c7ab894a4cf45f5de11a44cc7444fb1108"},

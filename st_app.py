@@ -182,7 +182,7 @@ def front_cover():
         # branch
         st.write(
             "What would you like to do?"
-            " (one para/send takes about 1s)"
+            " (one para/sent takes about 1s)"
         )
 
     sb_tit_expander = st.sidebar.beta_expander("Select operation mode (click to toggle)", expanded=False)
