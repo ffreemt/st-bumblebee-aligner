@@ -52,6 +52,10 @@ from fastlid import fastlid
 
 from tqdm import tqdm
 
+# python -m textblob.download_corpora
+import nltk
+nltk.download('punkt')
+
 import logging
 import logzero
 from logzero import logger
