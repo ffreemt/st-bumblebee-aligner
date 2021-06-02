@@ -35,7 +35,7 @@ def encode(
         debug: Optional[bool] = False,
 ) -> np.ndarray:
     # fmt: on
-    """ encode Union[str, list]: text -> np.ndarray.
+    """Encode Union[str, list]: text -> np.ndarray.
 
     if pt == "laser", lang = the language code(s) (ISO 639-1)
     bert: lang not needed
@@ -66,7 +66,7 @@ def encode(
 
         # from bee_aligner.bumblebee1024 import bumblebee1024
         # bee1024 = bumblebee1024(debug=debug)
-        from bee_aligner.bumblebee1024 import bee1024
+        from bee_aligner.bumblebee1024 import bee1024  # type: ignore # not used
 
         res = bee1024.embed_sentences(text, [lang] * len(text))
     else:

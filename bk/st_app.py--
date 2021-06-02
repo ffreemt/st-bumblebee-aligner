@@ -1,37 +1,4 @@
-r"""Showcase
-
-tset
-    eliminate outliers based on clustering
-        gen_row_align: further eliminate non-compliant points
-    alternative 1. use to generate aset
-            generate iset (based on interpolation)
-                use iset as guide (trace) on tset -> aset for aligning
-            alternative 2: gen aset
-
----
-based on bk\st_app.py--
-
-bk\st_app.py--:
-pset = find_pairs(cmat, 3)
-
-tinybee.find_pairs gen_aset
-embed_text: @st.cache fetch_embed.fetch_embed
-    src_embed = embed_text(src_blocks
-    tgt_embed = embed_text(tgt_blocks
-
-cmat = cos_matrix2(src_embed, tgt_embed)
-tset = cmat2tset(cmat)
-pset = find_pairs(cmat, 3)
-    used iset = gen_iset(cmat)
-        [used dbscan clustering
-        and pset = gen_row_align (tset)
-        iset = interpolate_pset(pset, tgt_len)
-        ]
-    pset: tset with iset [(optics labels_ > -1 + gen_row_align( constrainst) + interpolate_pset)]
-aset = gen_aset(pset, src_len, tgt_len)
-aligned_blocks = align_texts(aset, src_blocks, tgt_blocks)
-
-"""
+"""Showcase, based on st-bee2-aligner.py."""
 from typing import List
 
 import numpy as np
@@ -46,21 +13,13 @@ from polyglot.text import Detector, Text
 from sentence_splitter import split_text_into_sentences
 from timeit import default_timer
 import more_itertools as mit
-from pendulum import now
-import langid
-from fastlid import fastlid
-
-from tqdm import tqdm
 
 import logging
 import logzero
 from logzero import logger
 # from absl import app, flags
 
-__version__ = "0.1.1"
-
-# from bee_aligner import __version__
-
+from bee_aligner import __version__
 from bee_aligner.color_table_applymap import color_table_applymap
 from bee_aligner.fetch_sent_corr import fetch_sent_corr
 # from bee_aligner.plist_to_slist import plist_to_slist
@@ -79,9 +38,6 @@ from tinybee.gen_iset import gen_iset
 from tinybee.gen_aset import gen_aset
 from tinybee.align_texts import align_texts
 
-from light_scores import light_scores
-from light_aligner.bingmdx_tr import bingmdx_tr
-
 # use sentence_splitter if supported
 LANG_S = ["ca", "cs", "da", "nl", "en", "fi", "fr", "de",
           "el", "hu", "is", "it", "lv", "lt", "no", "pl",
@@ -96,7 +52,7 @@ logzero.loglevel(LOGLEVEL)
 
 @st.cache
 def embed_text(text: List[str]):
-    """Cache fetch_embed.embed_text.embed_text(text).
+    """Cache tinybee.embed_text.embed_text(text).
 
     fetch_embed(item, livepbar=False)
     """
@@ -222,15 +178,13 @@ def front_cover():
     st.sidebar.markdown("# Streamlit powered bumblebee-ng aligner")
     sb_tit_expander = st.sidebar.beta_expander("More info (click to toggle)", expanded=True)
     with sb_tit_expander:
-        st.write(f"Showcasing v.{__version__}, refined, quasi-prodction-ready:sunglasses:)")
+        st.write("(refined, quasi-prodction-ready:sunglasses:)")
         # branch
         st.write(
-            "What would you like to do? "
-            "Fast-Engine: based on a home-brewed algorithm, blazing fast but can only process en-zh para/sent pairs, not as sophisticated as DL-Engine; "
-            "DL-Engin: based on machine learning, multilingual, one para/sent takes about 1s."
+            "What would you like to do?"
+            " (one para/sent takes about 1s)"
         )
 
-    _ = '''  # moved to 'form submit button' below
     sb_tit_expander = st.sidebar.beta_expander("Select operation mode (click to toggle)", expanded=False)
     with sb_tit_expander:
         op_mode = st.selectbox(
@@ -249,7 +203,6 @@ def front_cover():
     with selection_expander:
         st.success(op_mode)
         # st.success(model_sel)
-    # '''
 
     # model_url
     _ = """
@@ -266,11 +219,7 @@ def front_cover():
         src_fileio = st.file_uploader("Choose a file (utf8 txt)", type=['txt',], key="src_text")
         tgt_fileio = st.file_uploader("Choose a file (utf8 txt)", type=['txt',], key="tgt_text")
 
-    logger.debug("type src_fileio: %s", type(src_fileio))
-    logger.debug("type tgt_fileio: %s", type(tgt_fileio))
-
-    # return src_fileio, tgt_fileio, op_mode, model_url
-    return src_fileio, tgt_fileio, model_url
+    return src_fileio, tgt_fileio, op_mode, model_url
 
 
 def align_paras_sents(src_text, tgt_text, src_fileio, tgt_fileio, model_url):
@@ -583,21 +532,18 @@ def main():
     src_text = []
     tgt_text = []
 
-    # src_fileio, tgt_fileio, op_mode, model_url = front_cover()
-    src_fileio, tgt_fileio, model_url = front_cover()
+    src_fileio, tgt_fileio, op_mode, model_url = front_cover()
     logger.debug(" front_cover done...")
 
     fileio_slot = st.empty()
 
     if src_fileio is None or tgt_fileio is None:
         logger.debug(" fileio not ready...")
-        files = f"[{src_fileio.name if src_fileio else ''}]\n[{tgt_fileio.name if tgt_fileio else ''}]"
+        files = f"{src_fileio.name if src_fileio else ''} {tgt_fileio.name if tgt_fileio else ''}"
         if not files.strip():
             files = "None"
-        fileio_slot.text(f""" available files:
-{files},
-upload or re-upload files or refresh page""")
-        return None
+        fileio_slot.text(f" available files: {files}, upload or re-upload files or refresh page")
+        return
 
     # st.write("src_text (paras):", len(src_text), "tgt_text (paras): ", len(tgt_text))
 
@@ -611,15 +557,15 @@ upload or re-upload files or refresh page""")
 
     # srt_text tgt_text defined
 
-    fileio_slot.text(f"{src_file} ({src_plen} paras)\n{tgt_file} ({tgt_plen} paras) ready")
+    fileio_slot.text(f"{src_file} ({src_plen} paras) {tgt_file} ({tgt_plen} paras) ready")
     logger.debug(" src_text: %s, tgt_text: %s ", len(src_text), len(tgt_text))
 
-    if not src_text or not tgt_text:
+    if not src_text or not src_text:
         if not src_text:
             st.warning("Source file is apparently empty")
         if not tgt_text:
             st.warning("Target file is apparently empty")
-        return None
+        return
 
     text_info_exp = st.beta_expander("text info and samples", expanded=False)
     with text_info_exp:
@@ -627,47 +573,6 @@ upload or re-upload files or refresh page""")
         st.write(f"{src_fileio.name} {tgt_fileio.name} read in")
         st.write("number of src-text tgt-text paras:", len(src_text), len(tgt_text))
         st.write(src_text[-3:], tgt_text[-3:])
-
-    # form submit button https://blog.streamlit.io/introducing-submit-button-and-forms/
-    _ = """
-    sb_engine_expander = st.sidebar.beta_expander("Select engine type", expanded=False)
-    with sb_engine_expander:
-        ali_engine = st.selectbox(
-            "Select engine type",
-            ("Fast-Engine", "DL-Engine")
-        )
-    # """
-
-    ali_engine = st.sidebar.selectbox(
-        "Select engine type",
-        ("Fast-Engine", "DL-Engine")
-    )
-    explain_text = {
-        "Fast-Engine": "home-brewed, currently en-zh only, fast",
-        "DL-Engine": "Based on deep-learning, more powerful, multilingual, slower"
-    }
-
-    selection_expander = st.sidebar.beta_expander(f"Align engine selected: {ali_engine}", expanded=True)
-    with selection_expander:
-        # st.success(f"{op_mode}")
-        st.success(f"{ali_engine}: {explain_text[ali_engine]}")
-
-    with st.sidebar.form('Form1'):
-        # op_mode = st.selectbox('Select', ['Para Align', 'Sent Align'], key=1)
-        op_mode = st.selectbox(
-            "Select operation mode",
-            ("Para Align", "Sent Align"),
-            key=1,
-        )
-        submitted1 = st.form_submit_button('Click to start aligning')
-
-    # Submit and Go
-    logger.debug("submitted1: %s", submitted1)
-    if not submitted1:
-        logger.debug("Proceed when subtmit is clicked")
-        return None
-
-    logger.debug("submitted1: %s", submitted1)
 
     if op_mode in ["Sent Align"]:
         src_lang = Detector(" ".join(src_text)).language.code
@@ -694,102 +599,60 @@ upload or re-upload files or refresh page""")
 
     tot_len = len(src_blocks) + len(tgt_blocks)
     len_ = len(src_blocks)
-    if ali_engine in ["DL-Engine"]:
-        tot = len_ // 32 + bool(len_ % 32)
-        len_ = len(tgt_blocks)
-        tot += len_ // 32 + bool(len_ % 32)
-        tot_time = round(tot * 0.5, 1)
-        arr_time = now().add(minutes=tot_time).in_timezone("Asia/Shanghai").format("YYYY-MM-DD HH:mm:ss z")
-        _ = f"blocks to process: {tot_len}, eta: {tot_time} minutes (~{arr_time})"
-    else:
-        _ = f"blocks to process: {tot_len}"
+    tot = len_ // 32 + bool(len_ % 32)
+    len_ = len(tgt_blocks)
+    tot += len_ // 32 + bool(len_ % 32)
 
+    tot_time = round(tot * 0.5, 1)
+
+    _ = f"blocks to process: {tot_len}, eta: {tot_time} min."
     blocks_exp = st.beta_expander(_, expanded=False)
     with blocks_exp:
         st.write(src_blocks)
         st.write(tgt_blocks)
 
-    if ali_engine in ["DL-Engine"]:
+    # cmat = bee_corr(src_blocks, tgt_blocks, url=model_url)
 
-        # cmat = bee_corr(src_blocks, tgt_blocks, url=model_url)
+    # src_embed = embed_text(src_blocks)  # 329, 6min
+    # tgt_embed = embed_text(tgt_blocks)  # 291,
 
-        # src_embed = embed_text(src_blocks)  # 329, 6min
-        # tgt_embed = embed_text(tgt_blocks)  # 291,
+    pbar = st.progress(0)
+    logger.debug("embedding src_text")
+    src_embed = []
+    len_ = len(src_blocks)
+    tot = len_ // 32 + bool(len_ % 32)
+    idx = 0
+    for elm in mit.chunked(src_blocks, 32):
+        idx += 1
+        logger.debug(" %s, %s", idx, idx / tot)
+        try:
+            _ = embed_text(elm)
+        except Exception as e:
+            st.write(e)
+            _ = [[str(e)] + [""] * 31]
+        src_embed.extend(_)
+        pbar.progress(idx/tot)
 
-        pbar = st.progress(0)
-        logger.debug("embedding src_text")
-        src_embed = []
-        len_ = len(src_blocks)
-        tot = len_ // 32 + bool(len_ % 32)
-        idx = 0
-        for elm in mit.chunked(src_blocks, 32):
-            idx += 1
-            logger.debug(" %s, %s", idx, idx / tot)
-            try:
-                _ = embed_text(elm)
-            except Exception as e:
-                st.write(e)
-                _ = [[str(e)] + [""] * 31]
-            src_embed.extend(_)
-            pbar.progress(idx / tot)
+    pbar = st.progress(0)
+    logger.debug("embedding tgt_text")
+    tgt_embed = []
+    len_ = len(tgt_blocks)
+    tot = len_ // 32 + bool(len_ % 32)
+    idx = 0
+    for elm in mit.chunked(tgt_blocks, 32):
+        idx += 1
+        logger.debug("  %s, %s", idx, idx / tot)
+        try:
+            _ = embed_text(elm)
+        except Exception as e:
+            st.write(e)
+            _ = [[str(e)] + [""] * 31]
+        tgt_embed.extend(_)
+        pbar.progress(idx / tot)
 
-        pbar = st.progress(0)
-        logger.debug("embedding tgt_text")
-        tgt_embed = []
-        len_ = len(tgt_blocks)
-        tot = len_ // 32 + bool(len_ % 32)
-        idx = 0
-        for elm in mit.chunked(tgt_blocks, 32):
-            idx += 1
-            logger.debug("  %s, %s", idx, idx / tot)
-            try:
-                _ = embed_text(elm)
-            except Exception as e:
-                st.write(e)
-                _ = [[str(e)] + [""] * 31]
-            tgt_embed.extend(_)
-            pbar.progress(idx / tot)
+    cmat = cos_matrix2(src_embed, tgt_embed)
 
-        cmat = cos_matrix2(src_embed, tgt_embed)
-
-        cmat = np.array(cmat)
-    else:  # Fast-Engine
-        # langid.set_languages(langs=['en', 'zh'])
-        # src_lang = langid.classify(" ".join(src_blocks))
-        # tgt_lang = langid.classify(" ".join(tgt_blocks))
-
-        fastlid.set_languages = None
-        src_lang = fastlid(src_blocks)[0]
-        tgt_lang = fastlid(tgt_blocks)[0]
-
-        if src_lang not in ['en', 'zh'] or tgt_lang not in ['en', 'zh']:
-            logger.warning("We detected: src_lang=%s, tgt_lang=%s", src_lang, tgt_lang)
-            logger.info("We ll preset them as ['en', 'zh'] and try again")
-            fastlid.set_languages = ['en', 'zh']
-            src_lang = fastlid(src_blocks)[0]
-            tgt_lang = fastlid(tgt_blocks)[0]
-            logger.info(" Retry result: src_lang=%s, tgt_lang=%s", src_lang, tgt_lang)
-
-        if src_lang == tgt_lang:
-            logger.error(" src_lang (%s) == tgt_lang (%s)", src_lang, tgt_lang)
-            logger.info("The current version ignores this. Future versions may implement something to handle this.")
-            return None
-
-        if src_lang in ['en']:
-            paras_w4w = []
-            for elm in tqdm(src_blocks):
-                paras_w4w.append(bingmdx_tr(elm))
-            lmat_w4w = light_scores([" ".join([*elm]) for elm in paras_w4w], [" ".join([*elm]) for elm in tgt_blocks])
-        else:
-            paras_w4w = []
-            for elm in tqdm(tgt_blocks):
-                paras_w4w.append(bingmdx_tr(elm))
-            lmat_w4w = light_scores([" ".join([*elm]) for elm in tgt_blocks], [" ".join([*elm]) for elm in paras_w4w])
-
-        cmat = lmat_w4w.T
-        logger.info(" lmat_w4w.shape: %s, len(src_blocks): %s, len(tgt_blocks): %s", lmat_w4w.shape, len(src_blocks), len(tgt_blocks))
-
-    logger.debug("engine: %s", ali_engine)
+    cmat = np.array(cmat)
 
     heatmap_exp = st.beta_expander("heatmap", expanded=False)
     with heatmap_exp:
@@ -814,7 +677,7 @@ upload or re-upload files or refresh page""")
     # st.dataframe(pd.DataFrame(cmat).style.highlight_max(axis=0))
 
     pset = find_pairs(cmat, 3)  # pair set with metrics
-    st.write(f"{len(pset)} 'good' pairs found, ", f"{round(len(pset) / len_, 2) * 100}%")
+    st.write(f"{len(pset)} 'good' pairs found", f"{round(len(pset) / len_, 2) * 100}%")
 
     # _ = """
     pset_expand = st.beta_expander("pset: aligned pairs with metrics", expanded=True)
@@ -833,13 +696,12 @@ upload or re-upload files or refresh page""")
 
         ax.set_xlabel(f"{tgt_fileio.name}")
         ax.set_ylabel(f"{src_fileio.name}")
-        ax.set_title("aligned pairs with illustrated cosine similarity")
+        ax.set_title("aligned pairs with cosine similarity")
 
         ax.set_xlim(xmin=0, xmax=len(tgt_blocks) - 1)
         ax.set_ylim(ymin=0, ymax=len(src_blocks) - 1)
         ax.grid(True)
         st.pyplot(fig)
-
     # """
 
     # iset
@@ -867,13 +729,15 @@ upload or re-upload files or refresh page""")
 
         ax.set_xlabel(f"{tgt_fileio.name}")
         ax.set_ylabel(f"{src_fileio.name}")
-        ax.set_title("interpolated pairs")
+        ax.set_title("interpolated pairs with cosine similarity")
 
         ax.set_xlim(xmin=xmin, xmax=xmax)
         ax.set_ylim(ymin=ymin, ymax=ymax)
         ax.grid(True)
         st.pyplot(fig)
     # """
+
+    logzero.loglevel(LOGLEVEL)
 
     logger.debug("pset: \n%s", pset)
 
@@ -929,11 +793,7 @@ upload or re-upload files or refresh page""")
         _ = pd.DataFrame(aligned_blocks)
         st.table(color_table_applymap(_))
 
-    logger.debug(" **aligned_blocks[:15]** \n%s", aligned_blocks[:15])
-
-    logger.debug(" Resetting file1_flag, file2_flag")
-    file1_flag, file2_flag = False, False
-
-    return None
+    logger.debug(" **aligned_blocks[:50]** \n%s", aligned_blocks[:50])
+    # print("**aligned_blocks**", aligned_blocks)
 
 main()

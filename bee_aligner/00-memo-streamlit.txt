@@ -1,0 +1,10 @@
+firefox: https://share.streamlit.io/
+
+@win10 pypi st-bumblebee-aligner
+    *dev
+    master
+
+---
+dev
+    @win10 pypi st-bumblebee-aligner
+    entry: st_app.py

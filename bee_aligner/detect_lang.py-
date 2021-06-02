@@ -1,6 +1,5 @@
 # coding: utf-8
-r'''
-Detect language using longid.classify.
+r'''Detect language using longid.classify.
 
 detct as Chinese if chinese_char_ratio>= threthold else dectect_language()
 
