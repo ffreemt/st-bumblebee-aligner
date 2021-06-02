@@ -55,6 +55,7 @@ from tqdm import tqdm
 # python -m textblob.download_corpora
 import nltk
 nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
 
 import logging
 import logzero
