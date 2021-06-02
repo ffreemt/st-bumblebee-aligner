@@ -109,6 +109,20 @@ def embed_text(text: List[str]):
     return fetch_embed(text, livepbar=False)
 
 
+def get_eta(len_, scale=0.56, unit="seconds"):
+    """Estimate toa and expiry time."""
+    if unit in ["seconds"]:
+        tot_time = round(len_ * scale)
+        arr_time = now().add(seconds=tot_time).in_timezone("Asia/Shanghai").format("YYYY-MM-DD HH:mm:ss z")
+        _ = f"blocks to process: {len_}, eta: {tot_time} {unit} (~{arr_time})"
+    else:
+        unit = "minutes"
+        tot_time = round(len_ * scale, 1)
+        arr_time = now().add(minutes=tot_time).in_timezone("Asia/Shanghai").format("YYYY-MM-DD HH:mm:ss z")
+        _ = f"blocks to process: {len_}, eta: {tot_time} {unit} (~{arr_time})"
+    return _
+
+
 def seg_text(text: str, lang: str) -> List[str]:
     """ split text to sentences.
 
@@ -706,8 +720,35 @@ upload or re-upload files or refresh page""")
         tot_time = round(tot * 0.5, 1)
         arr_time = now().add(minutes=tot_time).in_timezone("Asia/Shanghai").format("YYYY-MM-DD HH:mm:ss z")
         _ = f"blocks to process: {tot_len}, eta: {tot_time} minutes (~{arr_time})"
+        # _ = get_eta(tot, 0.5, "minutes")
     else:
-        _ = f"blocks to process: {tot_len}"
+        # _ = f"blocks to process: {tot_len}"
+        # langid.set_languages(langs=['en', 'zh'])
+        # src_lang = langid.classify(" ".join(src_blocks))
+        # tgt_lang = langid.classify(" ".join(tgt_blocks))
+
+        fastlid.set_languages = None
+        src_lang = fastlid(src_blocks)[0]
+        tgt_lang = fastlid(tgt_blocks)[0]
+
+        if src_lang not in ['en', 'zh'] or tgt_lang not in ['en', 'zh']:
+            logger.warning("We detected: src_lang=%s, tgt_lang=%s", src_lang, tgt_lang)
+            logger.info("We ll preset them as ['en', 'zh'] and try again")
+            fastlid.set_languages = ['en', 'zh']
+            src_lang = fastlid(src_blocks)[0]
+            tgt_lang = fastlid(tgt_blocks)[0]
+            logger.info(" Retry result: src_lang=%s, tgt_lang=%s", src_lang, tgt_lang)
+
+        if src_lang == tgt_lang:
+            logger.error(" src_lang (%s) == tgt_lang (%s)", src_lang, tgt_lang)
+            logger.info("The current version ignores this. Future versions may implement something to handle this.")
+            return None
+
+        # calculate estimated time of arrival for w4w conversion
+        if src_lang in ['en']:
+            _ = get_eta(len(src_blocks))
+        else:
+            _ = get_eta(len(tgt_blocks))
 
     blocks_exp = st.beta_expander(_, expanded=False)
     with blocks_exp:
@@ -759,27 +800,6 @@ upload or re-upload files or refresh page""")
 
         cmat = np.array(cmat)
     else:  # Fast-Engine
-        # langid.set_languages(langs=['en', 'zh'])
-        # src_lang = langid.classify(" ".join(src_blocks))
-        # tgt_lang = langid.classify(" ".join(tgt_blocks))
-
-        fastlid.set_languages = None
-        src_lang = fastlid(src_blocks)[0]
-        tgt_lang = fastlid(tgt_blocks)[0]
-
-        if src_lang not in ['en', 'zh'] or tgt_lang not in ['en', 'zh']:
-            logger.warning("We detected: src_lang=%s, tgt_lang=%s", src_lang, tgt_lang)
-            logger.info("We ll preset them as ['en', 'zh'] and try again")
-            fastlid.set_languages = ['en', 'zh']
-            src_lang = fastlid(src_blocks)[0]
-            tgt_lang = fastlid(tgt_blocks)[0]
-            logger.info(" Retry result: src_lang=%s, tgt_lang=%s", src_lang, tgt_lang)
-
-        if src_lang == tgt_lang:
-            logger.error(" src_lang (%s) == tgt_lang (%s)", src_lang, tgt_lang)
-            logger.info("The current version ignores this. Future versions may implement something to handle this.")
-            return None
-
         if src_lang in ['en']:
             paras_w4w = []
             for elm in tqdm(src_blocks):
