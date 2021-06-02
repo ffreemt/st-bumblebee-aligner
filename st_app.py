@@ -712,8 +712,8 @@ upload or re-upload files or refresh page""")
         tgt_blocks = tgt_text
 
     tot_len = len(src_blocks) + len(tgt_blocks)
-    len_ = len(src_blocks)
     if ali_engine in ["DL-Engine"]:
+        len_ = len(src_blocks)
         tot = len_ // 32 + bool(len_ % 32)
         len_ = len(tgt_blocks)
         tot += len_ // 32 + bool(len_ % 32)
@@ -809,7 +809,7 @@ upload or re-upload files or refresh page""")
             paras_w4w = []
             for elm in tqdm(tgt_blocks):
                 paras_w4w.append(bingmdx_tr(elm))
-            lmat_w4w = light_scores([" ".join([*elm]) for elm in tgt_blocks], [" ".join([*elm]) for elm in paras_w4w])
+            lmat_w4w = light_scores([" ".join([*elm]) for elm in src_blocks], [" ".join([*elm]) for elm in paras_w4w])
 
         cmat = lmat_w4w.T
         logger.info(" lmat_w4w.shape: %s, len(src_blocks): %s, len(tgt_blocks): %s", lmat_w4w.shape, len(src_blocks), len(tgt_blocks))
@@ -838,6 +838,7 @@ upload or re-upload files or refresh page""")
     # st.markdown("### cosine similarity matrix")
     # st.dataframe(pd.DataFrame(cmat).style.highlight_max(axis=0))
 
+    _, len_ = cmat.shape
     pset = find_pairs(cmat, 3)  # pair set with metrics
     st.write(f"{len(pset)} 'good' pairs found, ", f"{round(len(pset) / len_, 2) * 100}%")
 
