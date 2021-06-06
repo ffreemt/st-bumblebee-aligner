@@ -856,6 +856,8 @@ def main():
         cmat = lmat_w4w.T
         # cmat = lmat_w4w
 
+        cmat = normalize(cmat, axis=0)
+
         logger.info(" lmat_w4w.shape: %s, len(src_blocks): %s, len(tgt_blocks): %s", lmat_w4w.shape, len(src_blocks), len(tgt_blocks))
     else:  # SFast-Engine
         if src_lang in ['zh']:  # process tgt_blocks
@@ -867,9 +869,9 @@ def main():
             ...
 
         cmat = cmat.T  # comment out when updating light_scores
-        
+
         cmat = normalize(cmat, axis=0)
-        
+
     logger.debug("engine: %s", ali_engine)
 
     heatmap_exp = st.beta_expander("heatmap", expanded=False)
