@@ -89,7 +89,7 @@ from light_aligner.bingmdx_tr import bingmdx_tr
 
 from batch_tr import batch_tr
 
-__version__ = "0.1.2"
+__version__ = "0.1.2a"
 
 # use sentence_splitter if supported
 LANG_S = ["ca", "cs", "da", "nl", "en", "fi", "fr", "de",
@@ -193,17 +193,23 @@ def get_table_download_link_sents(df):
 
 
 def fetch_file_contents(src_fileio, tgt_fileio):
-    src_file = src_fileio.getvalue()
+    if src_fileio is None:
+        src_file = b""
+    else:
+        src_file = src_fileio.getvalue()
     if isinstance(src_file, bytes):
         src_file = src_file.decode("utf8")
 
     src_text = split_text(src_file)
 
-    tgt_file = tgt_fileio.getvalue()
+    if tgt_fileio is None:
+        tgt_file = b""
+    else:
+        tgt_file = tgt_fileio.getvalue()
     if isinstance(tgt_file, bytes):
         tgt_file = tgt_file.decode("utf8")
 
-    lang2 = Detector(tgt_file).language.code
+    # lang2 = Detector(tgt_file).language.code
 
     tgt_text = split_text(tgt_file)
 
@@ -241,12 +247,12 @@ def front_cover():
     # global src_fileio, op_mode, model_url
     # return src_fileio, tgt_fileio, op_mode, model_url
 
-    src_fileio = ""
-    tgt_fileio = ""
-    op_mode = ""
-    model_url = ""
+    # src_fileio = ""
+    # tgt_fileio = ""
+    # op_mode = ""
+    # model_url = ""
 
-    st.sidebar.markdown("# Streamlit powered bumblebee-ng aligner")
+    st.sidebar.markdown("### Streamlit powered bumblebee-ng aligner")
     sb_tit_expander = st.sidebar.beta_expander("More info (click to toggle)", expanded=True)
     with sb_tit_expander:
         st.write(f"Showcasing v.{__version__}, refined, quasi-prodction-ready:sunglasses:)")
@@ -293,6 +299,7 @@ The following alignment engine are available.
         model_url = "http://216.24.255.63:8008/text/"
     # """
 
+    _ = """  # dealt with in main
     # st.sidebar.subheader("Pick two files")
     sb_pick_filels = st.sidebar.beta_expander("Pick two files", expanded=True)
     with sb_pick_filels:
@@ -301,9 +308,10 @@ The following alignment engine are available.
 
     logger.debug("type src_fileio: %s", type(src_fileio))
     logger.debug("type tgt_fileio: %s", type(tgt_fileio))
+    # """
 
     # return src_fileio, tgt_fileio, op_mode, model_url
-    return src_fileio, tgt_fileio, model_url
+    # return src_fileio, tgt_fileio, model_url
 
 
 def align_paras_sents(src_text, tgt_text, src_fileio, tgt_fileio, model_url):
@@ -575,8 +583,9 @@ def back_cover():
     logger.debug("back_cover entry")
     back_cover_expander = st.beta_expander("Instructions")
     with back_cover_expander:
-        st.markdown("* Follow steps given in the left sidebar\n"
+        st.markdown("* Set up options in the left sidebar\n"
         "*   Click expanders\n +: to reveal more details; -: to hide them \n"
+        "* Press '**Click to start aligning**' to marvel. (The button will appear when everything is ready.)\n"
         f"* bumblebee-ng v.{__version__} from mu@qq41947782's keyboard in cyberspace. Join **qq group 316287378** for feedback and questions or to be kept updated. This web version of bumblebee is the twin brother of **desktop bumblebee**.")
 
     logger.debug("back_cover exit")
@@ -616,52 +625,80 @@ def main():
     src_text = []
     tgt_text = []
 
+    src_fileio, tgt_fileio = None, None
+    src_file, tgt_file = "", ""
+
     # src_fileio, tgt_fileio, op_mode, model_url = front_cover()
-    src_fileio, tgt_fileio, model_url = front_cover()
-    logger.debug(" front_cover done...")
+    # src_fileio, tgt_fileio, model_url = front_cover()
+    # logger.debug(" front_cover done...")
+
+    # front_cover()
+    st.sidebar.markdown("### Streamlit powered bumblebee-ng aligner")
+    sb_tit_expander = st.sidebar.beta_expander("More info (click to toggle)", expanded=True)
+    with sb_tit_expander:
+        st.write(f"Showcasing v.{__version__}, refined, quasi-prodction-ready:sunglasses:)")
+        # branch
+        # st.markdown(
+        st.write(
+            """What would you like to do?
+The following alignment engine are available.
+
+**SFast-Engine**: super-fast, based on machine translation;
+
+**Fast-Engine**: based on a home-brewed algorithm, blazing fast but can only process en-zh para/sent pairs, not as sophisticated as DL-Engine;
+
+**DL-Engin**: based on machine learning, multilingual, one para/sent takes about 1s."""
+        )
+
+    # src_fileio tgt_fileio
+    sb_pick_filels = st.sidebar.beta_expander("Pick two files", expanded=True)
+    with sb_pick_filels:
+        src_fileio = st.file_uploader("Choose a file (utf8 txt)", type=['txt',], key="src_text")
+        # if src_fileio is None: return None
+
+        tgt_fileio = st.file_uploader("Choose another file (utf8 txt)", type=['txt',], key="tgt_text")
+
+    logger.debug("type src_fileio: %s", type(src_fileio))
+    logger.debug("type tgt_fileio: %s", type(tgt_fileio))
 
     if src_fileio is not None:
-        logger.debug("src_fileio.name: %s", src_fileio.name)
+        logger.debug("src_fileio.name: [%s]", src_fileio.name)
     if tgt_fileio is not None:
-        logger.debug("tgt_fileio.name: %s", tgt_fileio.name)
+        logger.debug("tgt_fileio.name: [%s]", tgt_fileio.name)
 
     fileio_slot = st.empty()
 
-    if src_fileio is None or tgt_fileio is None:
-        logger.debug(" fileio not ready...")
-        files = f"[{src_fileio.name if src_fileio else ''}] [{tgt_fileio.name if tgt_fileio else ''}]"
-        if not files.strip():
-            files = "None"
-        fileio_slot.text(f""" available files:
-{files}, upload or re-upload files or refresh page""")
-        return None
+    if src_fileio is not None:
+        src_file = src_fileio.name
+    if tgt_fileio is not None:
+        tgt_file = tgt_fileio.name
 
     # st.write("src_text (paras):", len(src_text), "tgt_text (paras): ", len(tgt_text))
 
     # fetch file contents
     src_text, tgt_text = fetch_file_contents(src_fileio, tgt_fileio)
 
-    src_file = src_fileio.name
-    tgt_file = tgt_fileio.name
     src_plen = len(src_text)
     tgt_plen = len(tgt_text)
 
-    # srt_text tgt_text defined
-
-    fileio_slot.text(f"{src_file} ({src_plen} paras)\n{tgt_file} ({tgt_plen} paras) ready")
-    logger.debug(" src_text: %s, tgt_text: %s ", len(src_text), len(tgt_text))
+    if src_fileio is None or tgt_fileio is None:
+        logger.debug(" fileio not ready...[%s] [%s]", src_file, tgt_file)
+        fileio_slot.text(f""" available files:
+[{src_file}] [{tgt_file}], upload or re-upload files or refresh page""")
+    else:
+        fileio_slot.text(f"{src_file} ({src_plen} paras)\n{tgt_file} ({tgt_plen} paras) ready")
+    logger.debug(" len src_text: %s, len tgt_text: %s ", len(src_text), len(tgt_text))
 
     if not src_text or not tgt_text:
         if not src_text:
             st.warning("Source file is apparently empty")
         if not tgt_text:
             st.warning("Target file is apparently empty")
-        return None
 
     text_info_exp = st.beta_expander("text info and samples", expanded=False)
     with text_info_exp:
         # st.info(f"{src_fileio.name} {tgt_fileio.name} read in")
-        st.write(f"{src_fileio.name} {tgt_fileio.name} read in")
+        st.write(f"[{src_file}] [{tgt_file}] read in")
         st.write("number of src-text tgt-text paras:", len(src_text), len(tgt_text))
         st.write(src_text[-3:], tgt_text[-3:])
 
@@ -687,29 +724,22 @@ def main():
 
     selection_expander = st.sidebar.beta_expander(f"Align engine selected: {ali_engine}", expanded=True)
     with selection_expander:
-        # st.success(f"{op_mode}")
         st.success(f"{ali_engine}: {explain_text[ali_engine]}")
 
-    with st.sidebar.form('Form1'):
-        # op_mode = st.selectbox('Select', ['Para Align', 'Sent Align'], key=1)
-        op_mode = st.selectbox(
-            "Select operation mode",
-            ("Para Align", "Sent Align"),
-            key=1,
-        )
-        submitted1 = st.form_submit_button('Click to start aligning')
-
-    # Submit and Go
-    logger.debug("submitted1: %s", submitted1)
-    if not submitted1:
-        logger.debug("Proceed when subtmit is clicked")
-        return None
-
-    logger.debug("submitted1: %s", submitted1)
-
+    op_mode = st.sidebar.selectbox(
+        "Select operation mode",
+        ("Para Align", "Sent Align"),
+        key=1,
+    )
     if op_mode in ["Sent Align"]:
-        src_lang = Detector(" ".join(src_text)).language.code
-        tgt_lang = Detector(" ".join(tgt_text)).language.code
+        try:
+            src_lang = Detector(" ".join(src_text)).language.code
+        except Exception as e:
+            src_lang = "en"
+        try:
+            tgt_lang = Detector(" ".join(tgt_text)).language.code
+        except Exception as e:
+            tgt_lang = "zh"
 
         src_sents = []
         for elm in src_text:
@@ -729,6 +759,17 @@ def main():
     else:
         src_blocks = src_text
         tgt_blocks = tgt_text
+
+    logger.debug("src_file: [%s], tgt_file: [%s]", src_file, tgt_file)
+    # if not tgt_file or not src_file: return
+
+    twofiles_avail = tgt_file and src_file
+    logger.debug("twofiles_avail: %s", twofiles_avail)
+
+    if not twofiles_avail:
+        st.warning(' ** Files not ready yet. **')
+        logger.debug(" Files not ready yet: streamlit halted")
+        st.stop()
 
     # ### Engine selection ###
 
@@ -770,14 +811,14 @@ def main():
             eta_msg = get_eta(len(src_blocks), len(src_blocks))
         else:
             eta_msg = get_eta(len(tgt_blocks), len(tgt_blocks))
-    else:  # SFast-Engine
+    elif ali_engine in ["SFast-Engine"]:  # SFast-Engine
         fastlid.set_languages = None
         src_lang = fastlid(src_blocks)[0]
         tgt_lang = fastlid(tgt_blocks)[0]
         if not (src_lang in ['zh'] or tgt_lang in ['zh']):
-            st.warning(" src_lang (%s), tgt_lang (%s): one of these must be zh... exiting" % (src_lang, src_lang))
-            logger.warning(" src_lang (%s), tgt_lang (%s): one of these must be zh... exiting", src_lang, src_lang)
-            return None
+            st.warning(" src_lang (%s), tgt_lang (%s): one of these must be zh... result unpredictable" % (src_lang, src_lang))
+            logger.warning(" src_lang (%s), tgt_lang (%s): one of these must be zh...", src_lang, src_lang)
+            # return None
 
         if src_lang in ['zh']:  # process tgt_blocks
             char_len = len(" ".join(tgt_blocks))
@@ -797,227 +838,234 @@ def main():
         st.write(src_blocks)
         st.write(tgt_blocks)
 
-    if ali_engine in ["DL-Engine"]:
+    # with st.sidebar.form('Form1'):
+    with st.form('Form1'):
+        # op_mode = st.selectbox('Select', ['Para Align', 'Sent Align'], key=1)
+        st.write("**Ready when you are**")
+        submitted1 = st.form_submit_button('Click to start aligning')
+        # click submit to get going...
+        if submitted1:
 
-        # cmat = bee_corr(src_blocks, tgt_blocks, url=model_url)
+            if ali_engine in ["DL-Engine"]:
 
-        # src_embed = embed_text(src_blocks)  # 329, 6min
-        # tgt_embed = embed_text(tgt_blocks)  # 291,
+                # cmat = bee_corr(src_blocks, tgt_blocks, url=model_url)
 
-        pbar = st.progress(0)
-        logger.debug("embedding src_text")
-        src_embed = []
-        len_ = len(src_blocks)
-        tot = len_ // 32 + bool(len_ % 32)
-        idx = 0
-        for elm in mit.chunked(src_blocks, 32):
-            idx += 1
-            logger.debug(" %s, %s", idx, idx / tot)
-            try:
-                _ = embed_text(elm)
-            except Exception as e:
-                st.write(e)
-                _ = [[str(e)] + [""] * 31]
-            src_embed.extend(_)
-            pbar.progress(idx / tot)
+                # src_embed = embed_text(src_blocks)  # 329, 6min
+                # tgt_embed = embed_text(tgt_blocks)  # 291,
 
-        pbar = st.progress(0)
-        logger.debug("embedding tgt_text")
-        tgt_embed = []
-        len_ = len(tgt_blocks)
-        tot = len_ // 32 + bool(len_ % 32)
-        idx = 0
-        for elm in mit.chunked(tgt_blocks, 32):
-            idx += 1
-            logger.debug("  %s, %s", idx, idx / tot)
-            try:
-                _ = embed_text(elm)
-            except Exception as e:
-                st.write(e)
-                _ = [[str(e)] + [""] * 31]
-            tgt_embed.extend(_)
-            pbar.progress(idx / tot)
+                pbar = st.progress(0)
+                logger.debug("embedding src_text")
+                src_embed = []
+                len_ = len(src_blocks)
+                tot = len_ // 32 + bool(len_ % 32)
+                idx = 0
+                for elm in mit.chunked(src_blocks, 32):
+                    idx += 1
+                    logger.debug(" %s, %s", idx, idx / tot)
+                    try:
+                        _ = embed_text(elm)
+                    except Exception as e:
+                        st.write(e)
+                        _ = [[str(e)] + [""] * 31]
+                    src_embed.extend(_)
+                    pbar.progress(idx / tot)
 
-        cmat = cos_matrix2(src_embed, tgt_embed)
+                pbar = st.progress(0)
+                logger.debug("embedding tgt_text")
+                tgt_embed = []
+                len_ = len(tgt_blocks)
+                tot = len_ // 32 + bool(len_ % 32)
+                idx = 0
+                for elm in mit.chunked(tgt_blocks, 32):
+                    idx += 1
+                    logger.debug("  %s, %s", idx, idx / tot)
+                    try:
+                        _ = embed_text(elm)
+                    except Exception as e:
+                        st.write(e)
+                        _ = [[str(e)] + [""] * 31]
+                    tgt_embed.extend(_)
+                    pbar.progress(idx / tot)
 
-        cmat = np.array(cmat)
-    elif ali_engine in ["Fast-Engine"]:  # Fast-Engine
-        if src_lang in ['en']:
-            paras_w4w = []
-            for elm in tqdm(src_blocks):
-                paras_w4w.append(bingmdx_tr(elm))
-            lmat_w4w = light_scores([" ".join([*elm]) for elm in paras_w4w], [" ".join([*elm]) for elm in tgt_blocks])
-        else:
-            paras_w4w = []
-            for elm in tqdm(tgt_blocks):
-                paras_w4w.append(bingmdx_tr(elm))
-            lmat_w4w = light_scores([" ".join([*elm]) for elm in src_blocks], [" ".join([*elm]) for elm in paras_w4w])
+                cmat = cos_matrix2(src_embed, tgt_embed)
 
-        cmat = lmat_w4w.T
-        # cmat = lmat_w4w
+                cmat = np.array(cmat)
+            elif ali_engine in ["Fast-Engine"]:  # Fast-Engine
+                if src_lang in ['en']:
+                    paras_w4w = []
+                    for elm in tqdm(src_blocks):
+                        paras_w4w.append(bingmdx_tr(elm))
+                    lmat_w4w = light_scores([" ".join([*elm]) for elm in paras_w4w], [" ".join([*elm]) for elm in tgt_blocks])
+                else:
+                    paras_w4w = []
+                    for elm in tqdm(tgt_blocks):
+                        paras_w4w.append(bingmdx_tr(elm))
+                    lmat_w4w = light_scores([" ".join([*elm]) for elm in src_blocks], [" ".join([*elm]) for elm in paras_w4w])
 
-        cmat = normalize(cmat, axis=0)
+                cmat = lmat_w4w.T
+                # cmat = lmat_w4w
 
-        logger.info(" lmat_w4w.shape: %s, len(src_blocks): %s, len(tgt_blocks): %s", lmat_w4w.shape, len(src_blocks), len(tgt_blocks))
-    else:  # SFast-Engine
-        if src_lang in ['zh']:  # process tgt_blocks
-            tr_blocks = batch_tr(tgt_blocks)
-            cmat = light_scores([" ".join([*elm]) for elm in src_blocks], [" ".join([*elm]) for elm in tr_blocks])
-        else:  # process src_blocks
-            tr_blocks = batch_tr(src_blocks)
-            cmat = light_scores([" ".join([*elm]) for elm in tr_blocks], [" ".join([*elm]) for elm in tgt_blocks])
-            ...
+                cmat = normalize(cmat, axis=0)
 
-        cmat = cmat.T  # comment out when updating light_scores
+                logger.info(" lmat_w4w.shape: %s, len(src_blocks): %s, len(tgt_blocks): %s", lmat_w4w.shape, len(src_blocks), len(tgt_blocks))
+            else:  # SFast-Engine
+                if src_lang in ['zh']:  # process tgt_blocks
+                    tr_blocks = batch_tr(tgt_blocks)
+                    cmat = light_scores([" ".join([*elm]) for elm in src_blocks], [" ".join([*elm]) for elm in tr_blocks])
+                else:  # process src_blocks
+                    tr_blocks = batch_tr(src_blocks)
+                    cmat = light_scores([" ".join([*elm]) for elm in tr_blocks], [" ".join([*elm]) for elm in tgt_blocks])
+                    ...
 
-        cmat = normalize(cmat, axis=0)
+                cmat = cmat.T  # comment out when updating light_scores
 
-    logger.debug("engine: %s", ali_engine)
+                cmat = normalize(cmat, axis=0)
 
-    heatmap_exp = st.beta_expander("heatmap", expanded=False)
-    with heatmap_exp:
-        fig, ax = plt.subplots()
+            logger.debug("engine: %s", ali_engine)
 
-        # sns.heatmap(cmat, ax=ax, cmap="hot")
-        # sns.heatmap(cmat, ax=ax, cmap="gist_heat_r")
-        # sns.heatmap(cmat)
-        sns.heatmap(cmat, cmap="Blues")
+            heatmap_exp = st.beta_expander("heatmap", expanded=False)
+            with heatmap_exp:
+                fig, ax = plt.subplots()
 
-        ax.invert_yaxis()
+                # sns.heatmap(cmat, ax=ax, cmap="hot")
+                # sns.heatmap(cmat, ax=ax, cmap="gist_heat_r")
+                # sns.heatmap(cmat)
+                sns.heatmap(cmat, cmap="Blues")
 
-        ax.set_xlabel(f"{tgt_fileio.name}")
-        ax.set_ylabel(f"{src_fileio.name}")
-        ax.set_title("cosine similarity heatmap")
-        st.pyplot(fig)
+                ax.invert_yaxis()
 
-    # st.write(cmat)
-    # st.write(" plotted")
+                ax.set_xlabel(f"{tgt_fileio.name}")
+                ax.set_ylabel(f"{src_fileio.name}")
+                ax.set_title("cosine similarity heatmap")
+                st.pyplot(fig)
 
-    # st.markdown("### cosine similarity matrix")
-    # st.dataframe(pd.DataFrame(cmat).style.highlight_max(axis=0))
+            # st.write(cmat)
+            # st.write(" plotted")
 
-    _, len_ = cmat.shape
-    pset = find_pairs(cmat, 3)  # pair set with metrics
-    st.write(f"{len(pset)} 'good' pairs found, ", f"{round(len(pset) / len_, 2) * 100}%")
+            # st.markdown("### cosine similarity matrix")
+            # st.dataframe(pd.DataFrame(cmat).style.highlight_max(axis=0))
 
-    # _ = """
-    pset_expand = st.beta_expander("pset: aligned pairs with metrics", expanded=True)
-    with pset_expand:
-        fig, ax = plt.subplots()
-        df = pd.DataFrame(pset, columns=['y00', 'yargmax', 'cos'])
-        sns.set_style("whitegrid")
-        sns.scatterplot(
-            data=df,
-            x='y00',
-            y='yargmax',
-            hue='cos',
-            size='cos',
-            sizes=(1, 20),
-        )
+            _, len_ = cmat.shape
+            pset = find_pairs(cmat, 3)  # pair set with metrics
+            st.write(f"{len(pset)} 'good' pairs found, ", f"{round(len(pset) / len_, 2) * 100}%")
 
-        ax.set_xlabel(f"{tgt_fileio.name}")
-        ax.set_ylabel(f"{src_fileio.name}")
-        ax.set_title("aligned pairs with illustrated cosine similarity")
+            # _ = """
+            pset_expand = st.beta_expander("pset: aligned pairs with metrics", expanded=True)
+            with pset_expand:
+                fig, ax = plt.subplots()
+                df = pd.DataFrame(pset, columns=['y00', 'yargmax', 'cos'])
+                sns.set_style("whitegrid")
+                sns.scatterplot(
+                    data=df,
+                    x='y00',
+                    y='yargmax',
+                    hue='cos',
+                    size='cos',
+                    sizes=(1, 20),
+                )
 
-        ax.set_xlim(xmin=0, xmax=len(tgt_blocks) - 1)
-        ax.set_ylim(ymin=0, ymax=len(src_blocks) - 1)
-        ax.grid(True)
-        st.pyplot(fig)
+                ax.set_xlabel(f"{tgt_fileio.name}")
+                ax.set_ylabel(f"{src_fileio.name}")
+                ax.set_title("aligned pairs with illustrated cosine similarity")
 
-    # """
+                ax.set_xlim(xmin=0, xmax=len(tgt_blocks) - 1)
+                ax.set_ylim(ymin=0, ymax=len(src_blocks) - 1)
+                ax.grid(True)
+                st.pyplot(fig)
 
-    # iset
-    # _ = """
-    ymin, ymax = 0, len(src_blocks) - 1
-    xmin, xmax = 0, len(tgt_blocks) - 1
-    iset = gen_iset(cmat)
+            # """
 
-    logzero.loglevel(LOGLEVEL)
-    tset = cmat2tset(cmat)
+            # iset
+            # _ = """
+            ymin, ymax = 0, len(src_blocks) - 1
+            xmin, xmax = 0, len(tgt_blocks) - 1
+            iset = gen_iset(cmat)
 
-    logger.debug(" **tset**: \n%s", tset)
-    logger.debug(" **iset**: \n%s", iset)
+            logzero.loglevel(LOGLEVEL)
+            tset = cmat2tset(cmat)
 
-    iset_expand = st.beta_expander("interpolated pairs", expanded=True)
-    with iset_expand:
-        fig, ax = plt.subplots()
-        df = pd.DataFrame(iset, columns=['y00', 'yargmax'])
-        sns.set_style("whitegrid")
-        sns.scatterplot(
-            data=df,
-            x='y00',
-            y='yargmax'
-        )
+            logger.debug(" **tset**: \n%s", tset)
+            logger.debug(" **iset**: \n%s", iset)
 
-        ax.set_xlabel(f"{tgt_fileio.name}")
-        ax.set_ylabel(f"{src_fileio.name}")
-        ax.set_title("interpolated pairs")
+            iset_expand = st.beta_expander("interpolated pairs", expanded=True)
+            with iset_expand:
+                fig, ax = plt.subplots()
+                df = pd.DataFrame(iset, columns=['y00', 'yargmax'])
+                sns.set_style("whitegrid")
+                sns.scatterplot(
+                    data=df,
+                    x='y00',
+                    y='yargmax'
+                )
 
-        ax.set_xlim(xmin=xmin, xmax=xmax)
-        ax.set_ylim(ymin=ymin, ymax=ymax)
-        ax.grid(True)
-        st.pyplot(fig)
-    # """
+                ax.set_xlabel(f"{tgt_fileio.name}")
+                ax.set_ylabel(f"{src_fileio.name}")
+                ax.set_title("interpolated pairs")
 
-    logger.debug("pset: \n%s", pset)
+                ax.set_xlim(xmin=xmin, xmax=xmax)
+                ax.set_ylim(ymin=ymin, ymax=ymax)
+                ax.grid(True)
+                st.pyplot(fig)
+            # """
 
-    # st.write(pset)
+            logger.debug("pset: \n%s", pset)
 
-    src_len = len(src_blocks)
-    tgt_len = len(tgt_blocks)
-    aset = gen_aset(pset, src_len, tgt_len)
+            # st.write(pset)
 
-    # st.write("\n aset ", len(aset))
-    # st.write(pd.DataFrame(aset))
+            src_len = len(src_blocks)
+            tgt_len = len(tgt_blocks)
+            aset = gen_aset(pset, src_len, tgt_len)
 
-    logger.debug("aset: %s", aset)
-    # print("aset: ", aset)
+            # st.write("\n aset ", len(aset))
+            # st.write(pd.DataFrame(aset))
 
-    # return
+            logger.debug("aset: %s", aset)
+            # print("aset: ", aset)
 
-    # st.write(pd.DataFrame(aset))
-    # s_df = color_table_applymap(df)
+            # return
 
-    aset_exp = st.beta_expander(" aset ", expanded=False)
-    with aset_exp:
-        df = pd.DataFrame(aset, columns=['zh', 'en', 'cos'])
-        st.table(color_table_applymap(df))
+            # st.write(pd.DataFrame(aset))
+            # s_df = color_table_applymap(df)
 
-    _ = """
-    aset_expand = st.beta_expander("aligned pairs with metrics", expanded=True)
-    with aset_expand:
-        fig, ax = plt.subplots()
-        df = pd.DataFrame(aset, columns=['y00', 'yargmax', 'cos'])
-        sns.set_style("whitegrid")
-        sns.scatterplot(
-            data=df,
-            x='y00',
-            y='yargmax',
-            hue='cos',
-            size='cos',
-            sizes=(1, 120),
-        )
+            aset_exp = st.beta_expander(" aset ", expanded=False)
+            with aset_exp:
+                df = pd.DataFrame(aset, columns=['zh', 'en', 'cos'])
+                st.table(color_table_applymap(df))
 
-        ax.set_xlabel(f"{tgt_fileio.name}")
-        ax.set_ylabel(f"{src_fileio.name}")
-        ax.set_title("aligned pairs with cosine similarity")
+            _ = """
+            aset_expand = st.beta_expander("aligned pairs with metrics", expanded=True)
+            with aset_expand:
+                fig, ax = plt.subplots()
+                df = pd.DataFrame(aset, columns=['y00', 'yargmax', 'cos'])
+                sns.set_style("whitegrid")
+                sns.scatterplot(
+                    data=df,
+                    x='y00',
+                    y='yargmax',
+                    hue='cos',
+                    size='cos',
+                    sizes=(1, 120),
+                )
 
-        ax.grid()
-        st.pyplot(fig)
-    # """
+                ax.set_xlabel(f"{tgt_fileio.name}")
+                ax.set_ylabel(f"{src_fileio.name}")
+                ax.set_title("aligned pairs with cosine similarity")
 
-    aligned_blocks = align_texts(aset, src_blocks, tgt_blocks)  # -> texts
+                ax.grid()
+                st.pyplot(fig)
+            # """
 
-    aligned_expander = st.beta_expander("aligned blocks", expanded=False)
-    with aligned_expander:
-        _ = pd.DataFrame(aligned_blocks)
-        st.table(color_table_applymap(_))
+            aligned_blocks = align_texts(aset, src_blocks, tgt_blocks)  # -> texts
 
-    logger.debug(" **aligned_blocks[:15]** \n%s", aligned_blocks[:15])
+            aligned_expander = st.beta_expander("aligned blocks", expanded=False)
+            with aligned_expander:
+                _ = pd.DataFrame(aligned_blocks)
+                st.table(color_table_applymap(_))
 
-    logger.debug(" Resetting file1_flag, file2_flag")
-    file1_flag, file2_flag = False, False
+            logger.debug(" **aligned_blocks[:15]** \n%s", aligned_blocks[:15])
 
-    return None
+            logger.debug(" Resetting file1_flag, file2_flag")
+            file1_flag, file2_flag = False, False
+        # end of "if submitted1:"
 
 main()
