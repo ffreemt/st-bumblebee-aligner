@@ -57,12 +57,12 @@ import nltk
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 
+from sklearn.preprocessing import normalize
+
 import logging
 import logzero
 from logzero import logger
 # from absl import app, flags
-
-__version__ = "0.1.1"
 
 # from bee_aligner import __version__
 
@@ -87,6 +87,10 @@ from tinybee.align_texts import align_texts
 from light_scores import light_scores
 from light_aligner.bingmdx_tr import bingmdx_tr
 
+from batch_tr import batch_tr
+
+__version__ = "0.1.2"
+
 # use sentence_splitter if supported
 LANG_S = ["ca", "cs", "da", "nl", "en", "fi", "fr", "de",
           "el", "hu", "is", "it", "lv", "lt", "no", "pl",
@@ -109,17 +113,21 @@ def embed_text(text: List[str]):
     return fetch_embed(text, livepbar=False)
 
 
-def get_eta(len_, scale=0.56, unit="seconds"):
-    """Estimate toa and expiry time."""
+def get_eta(disp_len, len_, scale=0.56, unit="seconds"):
+    """Estimate toa and expiry time.
+
+    Args:
+        disp_len_: length to display in f"{disp_len} to process,"
+    """
     if unit in ["seconds"]:
         tot_time = round(len_ * scale)
         arr_time = now().add(seconds=tot_time).in_timezone("Asia/Shanghai").format("YYYY-MM-DD HH:mm:ss z")
-        _ = f"blocks to process: {len_}, eta: {tot_time} {unit} (~{arr_time})"
+        _ = f"blocks to process: {disp_len}, eta: {tot_time} {unit} (~{arr_time})"
     else:
         unit = "minutes"
         tot_time = round(len_ * scale, 1)
         arr_time = now().add(minutes=tot_time).in_timezone("Asia/Shanghai").format("YYYY-MM-DD HH:mm:ss z")
-        _ = f"blocks to process: {len_}, eta: {tot_time} {unit} (~{arr_time})"
+        _ = f"blocks to process: {disp_len}, eta: {tot_time} {unit} (~{arr_time})"
     return _
 
 
@@ -243,10 +251,16 @@ def front_cover():
     with sb_tit_expander:
         st.write(f"Showcasing v.{__version__}, refined, quasi-prodction-ready:sunglasses:)")
         # branch
+        # st.markdown(
         st.write(
-            "What would you like to do? "
-            "Fast-Engine: based on a home-brewed algorithm, blazing fast but can only process en-zh para/sent pairs, not as sophisticated as DL-Engine; "
-            "DL-Engin: based on machine learning, multilingual, one para/sent takes about 1s."
+            """What would you like to do?
+The following alignment engine are available.
+
+**SFast-Engine**: super-fast, based on machine translation;
+
+**Fast-Engine**: based on a home-brewed algorithm, blazing fast but can only process en-zh para/sent pairs, not as sophisticated as DL-Engine;
+
+**DL-Engin**: based on machine learning, multilingual, one para/sent takes about 1s."""
         )
 
     _ = '''  # moved to 'form submit button' below
@@ -606,16 +620,20 @@ def main():
     src_fileio, tgt_fileio, model_url = front_cover()
     logger.debug(" front_cover done...")
 
+    if src_fileio is not None:
+        logger.debug("src_fileio.name: %s", src_fileio.name)
+    if tgt_fileio is not None:
+        logger.debug("tgt_fileio.name: %s", tgt_fileio.name)
+
     fileio_slot = st.empty()
 
     if src_fileio is None or tgt_fileio is None:
         logger.debug(" fileio not ready...")
-        files = f"[{src_fileio.name if src_fileio else ''}]\n[{tgt_fileio.name if tgt_fileio else ''}]"
+        files = f"[{src_fileio.name if src_fileio else ''}] [{tgt_fileio.name if tgt_fileio else ''}]"
         if not files.strip():
             files = "None"
         fileio_slot.text(f""" available files:
-{files},
-upload or re-upload files or refresh page""")
+{files}, upload or re-upload files or refresh page""")
         return None
 
     # st.write("src_text (paras):", len(src_text), "tgt_text (paras): ", len(tgt_text))
@@ -653,15 +671,16 @@ upload or re-upload files or refresh page""")
     with sb_engine_expander:
         ali_engine = st.selectbox(
             "Select engine type",
-            ("Fast-Engine", "DL-Engine")
+            ("SFast-Engine", "Fast-Engine", "DL-Engine")
         )
     # """
 
     ali_engine = st.sidebar.selectbox(
         "Select engine type",
-        ("Fast-Engine", "DL-Engine")
+        ("SFast-Engine", "Fast-Engine", "DL-Engine")
     )
     explain_text = {
+        "SFast-Engine": "super-fast, based on machine translation, multilingual (currently just x-zh or zh-x)",
         "Fast-Engine": "home-brewed, currently en-zh only, fast",
         "DL-Engine": "Based on deep-learning, more powerful, multilingual, slower"
     }
@@ -711,6 +730,8 @@ upload or re-upload files or refresh page""")
         src_blocks = src_text
         tgt_blocks = tgt_text
 
+    # ### Engine selection ###
+
     tot_len = len(src_blocks) + len(tgt_blocks)
     if ali_engine in ["DL-Engine"]:
         len_ = len(src_blocks)
@@ -719,10 +740,10 @@ upload or re-upload files or refresh page""")
         tot += len_ // 32 + bool(len_ % 32)
         tot_time = round(tot * 0.5, 1)
         arr_time = now().add(minutes=tot_time).in_timezone("Asia/Shanghai").format("YYYY-MM-DD HH:mm:ss z")
-        _ = f"blocks to process: {tot_len}, eta: {tot_time} minutes (~{arr_time})"
-        # _ = get_eta(tot, 0.5, "minutes")
-    else:
-        # _ = f"blocks to process: {tot_len}"
+        eta_msg = f"blocks to process: {tot_len}, eta: {tot_time} minutes (~{arr_time})"
+        # eta_msg = get_eta(tot, tot, 0.5, "minutes")
+    elif ali_engine in ["Fast-Engine"]:
+        # eta_msg = f"blocks to process: {tot_len}"
         # langid.set_languages(langs=['en', 'zh'])
         # src_lang = langid.classify(" ".join(src_blocks))
         # tgt_lang = langid.classify(" ".join(tgt_blocks))
@@ -746,11 +767,32 @@ upload or re-upload files or refresh page""")
 
         # calculate estimated time of arrival for w4w conversion
         if src_lang in ['en']:
-            _ = get_eta(len(src_blocks))
+            eta_msg = get_eta(len(src_blocks), len(src_blocks))
         else:
-            _ = get_eta(len(tgt_blocks))
+            eta_msg = get_eta(len(tgt_blocks), len(tgt_blocks))
+    else:  # SFast-Engine
+        fastlid.set_languages = None
+        src_lang = fastlid(src_blocks)[0]
+        tgt_lang = fastlid(tgt_blocks)[0]
+        if not (src_lang in ['zh'] or tgt_lang in ['zh']):
+            st.warning(" src_lang (%s), tgt_lang (%s): one of these must be zh... exiting" % (src_lang, src_lang))
+            logger.warning(" src_lang (%s), tgt_lang (%s): one of these must be zh... exiting", src_lang, src_lang)
+            return None
 
-    blocks_exp = st.beta_expander(_, expanded=False)
+        if src_lang in ['zh']:  # process tgt_blocks
+            char_len = len(" ".join(tgt_blocks))
+            if char_len > 50000:
+                eta_msg = get_eta(len(tgt_blocks), char_len /10000, 1.5)  # secs
+            else:
+                eta_msg = f" {len(tgt_blocks)} to process"
+        else:  # process src_blocks
+            char_len = len(" ".join(src_blocks))
+            if char_len > 50000:
+                eta_msg = get_eta(len(tgt_blocks), char_len / 10000, 1.5)  # secs
+            else:
+                eta_msg = f" {len(src_blocks)} to process"
+
+    blocks_exp = st.beta_expander(eta_msg, expanded=False)
     with blocks_exp:
         st.write(src_blocks)
         st.write(tgt_blocks)
@@ -799,7 +841,7 @@ upload or re-upload files or refresh page""")
         cmat = cos_matrix2(src_embed, tgt_embed)
 
         cmat = np.array(cmat)
-    else:  # Fast-Engine
+    elif ali_engine in ["Fast-Engine"]:  # Fast-Engine
         if src_lang in ['en']:
             paras_w4w = []
             for elm in tqdm(src_blocks):
@@ -812,8 +854,22 @@ upload or re-upload files or refresh page""")
             lmat_w4w = light_scores([" ".join([*elm]) for elm in src_blocks], [" ".join([*elm]) for elm in paras_w4w])
 
         cmat = lmat_w4w.T
-        logger.info(" lmat_w4w.shape: %s, len(src_blocks): %s, len(tgt_blocks): %s", lmat_w4w.shape, len(src_blocks), len(tgt_blocks))
+        # cmat = lmat_w4w
 
+        logger.info(" lmat_w4w.shape: %s, len(src_blocks): %s, len(tgt_blocks): %s", lmat_w4w.shape, len(src_blocks), len(tgt_blocks))
+    else:  # SFast-Engine
+        if src_lang in ['zh']:  # process tgt_blocks
+            tr_blocks = batch_tr(tgt_blocks)
+            cmat = light_scores([" ".join([*elm]) for elm in src_blocks], [" ".join([*elm]) for elm in tr_blocks])
+        else:  # process src_blocks
+            tr_blocks = batch_tr(src_blocks)
+            cmat = light_scores([" ".join([*elm]) for elm in tr_blocks], [" ".join([*elm]) for elm in tgt_blocks])
+            ...
+
+        cmat = cmat.T  # comment out when updating light_scores
+        
+        cmat = normalize(cmat, axis=0)
+        
     logger.debug("engine: %s", ali_engine)
 
     heatmap_exp = st.beta_expander("heatmap", expanded=False)
