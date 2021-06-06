@@ -585,7 +585,7 @@ def back_cover():
     with back_cover_expander:
         st.markdown("* Set up options in the left sidebar\n"
         "*   Click expanders\n +: to reveal more details; -: to hide them \n"
-        "* Press '**Click to start aligning**' to marvel. (The button will appear when everything is ready.)\n"
+        "* Press '**Click to start aligning**' to get the ball rolling. (The button will appear when everything is ready.)\n"
         f"* bumblebee-ng v.{__version__} from mu@qq41947782's keyboard in cyberspace. Join **qq group 316287378** for feedback and questions or to be kept updated. This web version of bumblebee is the twin brother of **desktop bumblebee**.")
 
     logger.debug("back_cover exit")
