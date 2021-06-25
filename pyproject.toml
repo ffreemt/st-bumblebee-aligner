@@ -24,6 +24,8 @@ light-scores = "^0.1.1"
 light-aligner = "^0.1.4"
 batch-tr = {git = "https://github.com/ffreemt/batch-tr"}
 sklearn = "^0.0"
+fast-scores = {git = "https://github.com/ffreemt/fast-scores"}
+cchardet = "^2.1.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

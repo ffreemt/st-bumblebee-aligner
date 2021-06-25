@@ -1,0 +1,27 @@
+[flake8]
+ignore =
+  D203,
+  # line too long
+  E501
+  # imported but unused
+  F401
+  # module level import not at top of file
+  E402
+  # local variable 'file1_flag' is assigned
+  F841
+  # main too complex
+  C901
+per-file-ignores =
+  # imported but unused
+  # __init__.py: F401
+  test_*.py: F401
+exclude =
+  .git,
+  __pycache__,
+  docs/source/conf.py,
+  old,
+  build,
+  dist,
+	.venv
+  pad*.py
+max-complexity = 25
