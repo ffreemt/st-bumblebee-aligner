@@ -52,7 +52,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-import joblib
+# import joblib
 import streamlit as st
 
 import base64
@@ -926,7 +926,7 @@ srcfile [{state.src_filename}] tgtfile [{state.tgt_filename}], upload or re-uplo
                     # cmat = fast_scores(tr_blocks, _)
                     cmat = fast_scores(_, tr_blocks)
 
-                joblib.dump(cmat, "data/cmat.lzma")
+                # joblib.dump(cmat, "data/cmat.lzma")
                 # logger.info(f" cmat written to data/cmat.lzma: {cmat.shape}")
 
                 time_elapsed = (now() - then).in_words()
