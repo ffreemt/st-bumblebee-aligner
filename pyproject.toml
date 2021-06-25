@@ -26,6 +26,7 @@ batch-tr = {git = "https://github.com/ffreemt/batch-tr"}
 sklearn = "^0.0"
 fast-scores = {git = "https://github.com/ffreemt/fast-scores"}
 cchardet = "^2.1.7"
+pyfunctional = "^1.4.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
