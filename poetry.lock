@@ -138,18 +138,11 @@ version = "0.1.0"
 description = "batch machine translate via pythonpy"
 category = "main"
 optional = false
-python-versions = "^3.6.7"
-develop = false
+python-versions = ">=3.6.7,<4.0.0"
 
 [package.dependencies]
-logzero = "^1.7.0"
-translatepy = "^1.7"
-
-[package.source]
-type = "git"
-url = "https://github.com/ffreemt/batch-tr"
-reference = "master"
-resolved_reference = "071c3a2a1882fbce182b7b957b564090fbc4e4bd"
+logzero = ">=1.7.0,<2.0.0"
+translatepy = ">=1.7,<2.0"
 
 [[package]]
 name = "beautifulsoup4"
@@ -402,21 +395,15 @@ version = "0.1.0"
 description = " "
 category = "main"
 optional = false
-python-versions = "^3.6.7"
-develop = false
+python-versions = ">=3.7,<4.0"
 
 [package.dependencies]
-logzero = "^1.7.0"
-msgpack = "^1.0.2"
-nltk = "^3.6.2"
-simplemma = "^0.3.0"
-sklearn = "^0.0"
-
-[package.source]
-type = "git"
-url = "https://github.com/ffreemt/fast-scores"
-reference = "master"
-resolved_reference = "129d1153eacebfe89e8196e29c7333ec388ecaf7"
+logzero = ">=1.7.0,<2.0.0"
+msgpack = ">=1.0.2,<2.0.0"
+nltk = ">=3.6.2,<4.0.0"
+numpy = ">=1.21.0,<2.0.0"
+simplemma = ">=0.3.0,<0.4.0"
+sklearn = ">=0.0,<0.1"
 
 [[package]]
 name = "fastlid"
@@ -2387,7 +2374,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "619663fc1bc32fb7718cf1db5d04c767a1bbecb7152d62c2e616ce77561fbe13"
+content-hash = "876b95873cf94d19344bc7c65041d7b4c1f85135538c161217611c884bb2632f"
 
 [metadata.files]
 absl-py = [
@@ -2458,7 +2445,10 @@ base58 = [
     {file = "base58-2.1.0-py3-none-any.whl", hash = "sha256:8225891d501b68c843ffe30b86371f844a21c6ba00da76f52f9b998ba771fb48"},
     {file = "base58-2.1.0.tar.gz", hash = "sha256:171a547b4a3c61e1ae3807224a6f7aec75e364c4395e7562649d7335768001a2"},
 ]
-batch-tr = []
+batch-tr = [
+    {file = "batch-tr-0.1.0.tar.gz", hash = "sha256:c99c0486b218d0c49459c111f44bb759beea049e832ea5dfd3fff6d1fc7b15ba"},
+    {file = "batch_tr-0.1.0-py3-none-any.whl", hash = "sha256:16d12a52aea93842fcec6c8652236d279b9047e7ce731bd32697c68e5d362581"},
+]
 beautifulsoup4 = [
     {file = "beautifulsoup4-4.9.3-py2-none-any.whl", hash = "sha256:4c98143716ef1cb40bf7f39a8e3eec8f8b009509e74904ba3a7b315431577e35"},
     {file = "beautifulsoup4-4.9.3-py3-none-any.whl", hash = "sha256:fff47e031e34ec82bf17e00da8f592fe7de69aeea38be00523c04623c04fb666"},
@@ -2690,7 +2680,10 @@ executing = [
     {file = "executing-0.7.0-py2.py3-none-any.whl", hash = "sha256:1971c98963857f2c03f4b688d93fc4b28ce756bd102955ea8ea7ce0a7fd9a28f"},
     {file = "executing-0.7.0.tar.gz", hash = "sha256:509fe590e9da1c0659a273c42493a25af6f43d61cf36f085fc1b6cf2c6419d1f"},
 ]
-fast-scores = []
+fast-scores = [
+    {file = "fast-scores-0.1.0.tar.gz", hash = "sha256:f691cb672f52dc36580f877b0ef4920349119c2e8e9ef8b0ee25cf3fd44319a1"},
+    {file = "fast_scores-0.1.0-py3-none-any.whl", hash = "sha256:7b22e95197b118f0c1e4112d2dbacfcf13312d107047cf6a324496e23d15eaba"},
+]
 fastlid = [
     {file = "fastlid-0.1.6-py3-none-any.whl", hash = "sha256:202d93bda1f089f2efb97a352ba5f300698f5ac857567cb7c34518d73dc331a6"},
     {file = "fastlid-0.1.6.tar.gz", hash = "sha256:acf31498c226c4d4cc15b20bca3885df2f50caa29975470a668ee7098d8cb5c5"},

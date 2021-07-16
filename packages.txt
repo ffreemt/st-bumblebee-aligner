@@ -1,2 +1,2 @@
-pkg-config
 libicu-dev
+pkg-config
