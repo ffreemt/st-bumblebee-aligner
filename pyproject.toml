@@ -27,6 +27,9 @@ sklearn = "^0.0"
 fast-scores = {git = "https://github.com/ffreemt/fast-scores"}
 cchardet = "^2.1.7"
 pyfunctional = "^1.4.3"
+Cython = "^0.29.23"
+textacy = "^0.11.0"
+icecream = "^2.1.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
